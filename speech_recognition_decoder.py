@@ -6,17 +6,19 @@ import argparse
 
 import speech_recognition as sr
 
-'''
-This decoder is based CMU Sphinx (works offline) engine provided by speech_recognition python package. 
+"""
+This decoder is based on CMU Sphinx (works offline) engine provided by speech_recognition python package. 
 url: https://pypi.org/project/SpeechRecognition/ 
 to install: 
 pip install SpeechRecognition
-'''
+"""
 
 parser = argparse.ArgumentParser(description='This decoder is based CMU Sphinx (works offline) engine provided by '
                                              'speech_recognition python package.')  # type: ArgumentParser
 parser.add_argument('-i', '--infile', type=str,
                     help='input wave file', required=True)
+parser.add_argument('-c', '--conf', type=str, help='configuration file')
+
 
 if __name__ == '__main__':
     args = parser.parse_args()
