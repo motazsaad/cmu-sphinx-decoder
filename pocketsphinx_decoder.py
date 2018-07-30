@@ -21,13 +21,18 @@ from pydub import AudioSegment
 def load_decoder(model_config):
     # Create a decoder with certain model
     pocketsphinx_config = DefaultConfig()
-    print('hmm:', model_config['model']['hmm'])
-    print('lm:', model_config['model']['lm'])
-    print('dict:', model_config['model']['dict'])
-    pocketsphinx_config.set_string('-hmm', model_config['model']['hmm'])
-    pocketsphinx_config.set_string('-lm', model_config['model']['lm'])
-    pocketsphinx_config.set_string('-dict', model_config['model']['dict'])
-    pocketsphinx_config.set_string('-logfn', model_config['model']['log'])
+    model_name = model_config.sections()[0]
+    hmm = model_config[model_name]['hmm']
+    dict = model_config[model_name]['dict']
+    lm = model_config[model_name]['lm']
+    logfn = model_config[model_name]['log']
+    print('hmm:', hmm)
+    print('lm:', lm)
+    print('dict:', dict)
+    pocketsphinx_config.set_string('-hmm', hmm)
+    pocketsphinx_config.set_string('-lm', lm)
+    pocketsphinx_config.set_string('-dict', dict)
+    pocketsphinx_config.set_string('-logfn', logfn)
     decoder_engine = Decoder(pocketsphinx_config)
     return decoder_engine
 
@@ -74,7 +79,7 @@ if __name__ == '__main__':
     decoder = None
     if args.conf:
         conf_file = args.conf
-        config.read('config_ar.ini')
+        config.read(conf_file)
         decoder = load_decoder(config)
     else:
         decoder = load_default_decoder()
