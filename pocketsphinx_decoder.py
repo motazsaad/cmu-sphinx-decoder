@@ -87,12 +87,14 @@ if __name__ == '__main__':
     print('processing', wav_file)
     audio_segment = AudioSegment.from_wav(wav_file)
     print('wave duration: {}'.format(datetime.timedelta(seconds=audio_segment.duration_seconds)))
+    print('loading wave stream ...')
     wav_stream = open(wav_file, 'rb')
+    print('decoding ...')
     result = decode_wave(wav_stream, decoder)
     decode_time = time.time() - start_time
     decode_time_str = "decode time: {}".format(datetime.timedelta(seconds=decode_time))
     print(decode_time_str)
-    print("Sphinx transcribed the file as: \n{}\n".format(result))
+    print("CMU Sphinx transcribed the file as: \n{}\n".format(result))
 
 
 
