@@ -27,10 +27,8 @@ printf "out file: %s\n" ${out}
 # a handy SECONDS builtin variable that tracks the number of seconds that have passed since the shell was started.
 SECONDS=0
 
-pocketsphinx_continuous -infile ${wav_file} \
--hmm ${hmm} \
--lm ${lm} \
--dict ${dict}
+# it works fine with en-us model but it does not work with Arabic model.
+pocketsphinx_continuous -infile ${wav_file} -hmm ${hmm} -lm ${lm} -dict ${dict}
 #-logfn ${log} > ${out}
 
 decode_duration=$SECONDS
