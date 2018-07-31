@@ -98,5 +98,9 @@ if __name__ == '__main__':
 
 
 
+"""
+How to run: 
+python pocketsphinx_decoder.py -i wav/OSR_us_000_0019_16k.wav -c conf/config_en.ini
+python pocketsphinx_decoder.py -i wav/jsc_20180707_030.wav -c conf/config_ar.ini 
 
-
+"""
