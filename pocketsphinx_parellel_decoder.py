@@ -73,7 +73,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     wav_dir = args.indir
     audio_format = args.format
-    if audio_format is not 'wav':
+    if audio_format != 'wav':
         print('The current implementation does not support {}'.format(audio_format))
         sys.exit(-1)
     audio_files = glob.glob(os.path.join(wav_dir, '*.{}'.format(audio_format)))
@@ -88,18 +88,21 @@ if __name__ == '__main__':
     config.read(conf_file)
     print('loading decoder models ...')
     decoder = load_decoder(config)
-    for wav_file in audio_files:
-        print('processing', wav_file)
-        audio_segment = AudioSegment.from_wav(wav_file)
-        print('wave duration: {}'.format(datetime.timedelta(seconds=audio_segment.duration_seconds)))
-        print('loading wave stream ...')
-        wav_stream = open(wav_file, 'rb')
-        print('decoding ...')
+    total_duration = 0
+    for audio_file in audio_files:
+        print('processing', audio_file)
+        audio_segment = AudioSegment.from_file(audio_file, format=audio_format)
+        total_duration += audio_segment.duration_seconds
+        # print('wave duration: {}'.format(datetime.timedelta(seconds=audio_segment.duration_seconds)))
+        # print('loading wave stream ...')
+        wav_stream = open(audio_file, 'rb')
+        # print('decoding ...')
         result = decode_wave(wav_stream, decoder)
-        decode_time = time.time() - start_time
-        decode_time_str = "decode time: {}".format(datetime.timedelta(seconds=decode_time))
-        print(decode_time_str)
         print("CMU Sphinx transcribed the file as: \n{}\n".format(result))
+    print('total audio duration: {}'.format(datetime.timedelta(seconds=total_duration)))
+    decode_time = time.time() - start_time
+    decode_time_str = "decode time: {}".format(datetime.timedelta(seconds=decode_time))
+    print(decode_time_str)
 
 
 
