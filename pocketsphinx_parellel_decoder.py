@@ -102,7 +102,7 @@ if __name__ == '__main__':
     print('number of CPUs: {}'.format(cpu_count))
     args = parser.parse_args()
     in_dir = args.indir
-    audio_files = glob.glob(os.path.join(in_dir, '*.{}'.format(args.format)))
+    audio_files = sorted(glob.glob(os.path.join(in_dir, '*.{}'.format(args.format))))
     num_files = len(audio_files)
     if num_files == 0:
         print("no {} found in {}".format(args.format, in_dir))
