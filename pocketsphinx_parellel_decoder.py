@@ -44,17 +44,22 @@ def load_decoder(model_config):
 def decode_audio(audio_file):
     decode_result = {}
     audio_segment = AudioSegment.from_file(audio_file)
-    duration = '{0:.2f}'.format(audio_segment.duration_seconds)
+    duration = audio_segment.duration_seconds
+    conversion_time = 0
     if not audio_file.endswith('.wav'):
+        conversion_start_time = time.time()
         print('converting {} to wav'.format(audio_file))
-        wav_in_RAM = io.BytesIO()
+        wav_in_ram = io.BytesIO()
         f = io.BytesIO()
         data = audio_segment.raw_data
-        wav_in_RAM.write(data)
-        wav_in_RAM.seek(0)
-        wav_stream = wav_in_RAM
+        wav_in_ram.write(data)
+        wav_in_ram.seek(0)
+        wav_stream = wav_in_ram
+        conversion_time = time.time() - conversion_start_time
+        print('{} has been converted to wav'.format(audio_file))
     else:
         wav_stream = open(audio_file, 'rb')
+    decode_time_start_time = time.time()
     my_decoder.start_utt()
     while True:
         buf = wav_stream.read(1024)
@@ -68,7 +73,8 @@ def decode_audio(audio_file):
         text = hypothesis.hypstr
     except AttributeError:
         text = ''
-    decode_result[audio_file] = (duration, text)
+    decode_time = time.time() - decode_time_start_time
+    decode_result[audio_file] = (duration, decode_time, conversion_time, text)
     return decode_result
 
 
@@ -104,6 +110,7 @@ parser = argparse.ArgumentParser(description='This decoder is based CMU Sphinx (
 parser.add_argument('-i', '--indir', type=str,
                     help='input wave directory', required=True)
 parser.add_argument('-c', '--conf', type=str, help='configuration file', required=True)
+parser.add_argument('-o', '--outdir', type=str, help='output directory')
 
 
 if __name__ == '__main__':
@@ -131,9 +138,7 @@ if __name__ == '__main__':
     print('loading decoder models ...')
     my_decoder = load_decoder(config)
     print('decoder has been loaded ...')
-    total_duration = 0
     ###################################################
-    start_time = time.time()
     # process lists:
     print('processing lists')
     results = {}
@@ -145,18 +150,29 @@ if __name__ == '__main__':
         for r in result:
             results.update(r)
     ##########################################
-    for k, v in results.items():
-        print('file: {}'.format(k))
-        file_duration, transcription = v
-        print('duration: {}'.format(file_duration))
-        print('transcription: \n{}'.format(transcription))
-        print('######################################')
-        total_duration += file_duration
-
-    print('total audio duration: {}'.format(datetime.timedelta(seconds=total_duration)))
-    decode_time = time.time() - start_time
-    decode_time_str = "decode time: {}".format(datetime.timedelta(seconds=decode_time))
-    print(decode_time_str)
+    if args.outdir:
+        for my_file, v in results.items():
+            file_duration, file_decode_time, file_conversion_time, transcription = v
+            with open(my_file + '.txt', mode='w') as file_writer:
+                file_writer.write(transcription)
+    else:
+        total_duration = 0
+        total_decode_time = 0
+        total_conversion_time = 0
+        for k, v in results.items():
+            print('file: {}'.format(k))
+            file_duration, file_decode_time, file_conversion_time, transcription = v
+            print('transcription: \n{}'.format(transcription))
+            print('duration: {0:.2f}'.format(file_duration))
+            print('decode time: {0:.2f}'.format(file_decode_time))
+            print('conversion time: {0:.2f}'.format(file_conversion_time))
+            print('######################################')
+            total_duration += file_duration
+            total_decode_time += file_decode_time
+            total_conversion_time += file_conversion_time
+        print('total audio duration: {}'.format(datetime.timedelta(seconds=total_duration)))
+        print('total decode time: {}'.format(datetime.timedelta(seconds=total_decode_time)))
+        print('total conversion time: {}'.format(datetime.timedelta(seconds=total_conversion_time)))
 
 """
 How to run: 
@@ -165,4 +181,7 @@ python pocketsphinx_parellel_decoder.py -i wav/ar -c conf/config_ar.ini
 python pocketsphinx_parellel_decoder.py -i ~/wav_files_less_than_1m/ -c conf/config_ar.ini
 python cmu-sphinx-decoder/pocketsphinx_parellel_decoder.py -i wav_files_less_than_1m/ -c cmu-sphinx-decoder/conf/config_ar.ini
 python pocketsphinx_parellel_decoder.py -i ~/ts_sample_files/ -c conf/config_ar.ini
+
+python pocketsphinx_parellel_decoder.py -i ~/PycharmProjects/jsc-news-broadcast/mp3/ -c conf/config_ar.ini
+
 """
