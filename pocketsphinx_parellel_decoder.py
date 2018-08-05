@@ -41,11 +41,11 @@ def load_decoder(model_config):
     return decoder_engine
 
 
-def decode_wave(wav_file):
+def decode_audio(audio_file):
     decode_result = {}
-    audio_segment = AudioSegment.from_file(wav_file, format=args.format)
+    audio_segment = AudioSegment.from_file(audio_file, format=args.format)
     duration = audio_segment.duration_seconds
-    wav_stream = open(wav_file, 'rb')
+    wav_stream = open(audio_file, 'rb')
     my_decoder.start_utt()
     while True:
         buf = wav_stream.read(1024)
@@ -59,7 +59,7 @@ def decode_wave(wav_file):
         text = hypothesis.hypstr
     except AttributeError:
         text = ''
-    decode_result[wav_file] = (duration, text)
+    decode_result[audio_file] = (duration, text)
     return decode_result
 
 
@@ -81,26 +81,23 @@ parser = argparse.ArgumentParser(description='This decoder is based CMU Sphinx (
 parser.add_argument('-i', '--indir', type=str,
                     help='input wave directory', required=True)
 parser.add_argument('-c', '--conf', type=str, help='configuration file', required=True)
-parser.add_argument('-f', '--format', type=str,
+parser.add_argument('-f', '--format', type=str, choices=['wav', 'mp4'],
                     help='audio format (wav or mp4)', required=True)
 
 if __name__ == '__main__':
     cpu_count = os.cpu_count()
     print('number of CPUs: {}'.format(cpu_count))
     args = parser.parse_args()
-    wav_dir = args.indir
-    if args.format != 'wav':
-        print('The current implementation does not support {}'.format(args.format))
-        sys.exit(-1)
-    audio_files = glob.glob(os.path.join(wav_dir, '*.{}'.format(args.format)))
+    in_dir = args.indir
+    audio_files = glob.glob(os.path.join(in_dir, '*.{}'.format(args.format)))
     num_files = len(audio_files)
     if num_files == 0:
-        print("no {} found in {}".format(args.format, wav_dir))
+        print("no {} found in {}".format(args.format, in_dir))
         sys.exit(-1)
     print('# of audio files: {}'.format(num_files))
-    wav_file_lists = split_list(audio_files, cpu_count)
-    print('number of parts: {}'.format(len(wav_file_lists)))
-    for i, p in enumerate(wav_file_lists):
+    audio_file_lists = split_list(audio_files, cpu_count)
+    print('number of parts: {}'.format(len(audio_file_lists)))
+    for i, p in enumerate(audio_file_lists):
         print('part {} has {} audio segments'.format(i, len(p)))
     ###################################################
     # load configuration
@@ -118,11 +115,11 @@ if __name__ == '__main__':
     # process lists:
     print('processing lists')
     results = {}
-    for i, wav_list in enumerate(wav_file_lists):
-        print('process {} files in parallel in part {}'.format(len(wav_list), i))
+    for i, audio_list in enumerate(audio_file_lists):
+        print('process {} files in parallel in part {}'.format(len(audio_list), i))
         pool = multiprocessing.Pool(processes=cpu_count)
-        result = pool.map(decode_wave, wav_list)
-        #print(result)
+        result = pool.map(decode_audio, audio_list)
+        # print(result)
         for r in result:
             results.update(r)
     ##########################################
@@ -145,5 +142,6 @@ if __name__ == '__main__':
 How to run: 
 python pocketsphinx_parellel_decoder.py -i wav/en -c conf/config_en.ini -f wav 
 python pocketsphinx_parellel_decoder.py -i wav/ar -c conf/config_ar.ini -f wav 
+python pocketsphinx_parellel_decoder.py -i ~/wav_files_less_than_1m/ -c conf/config_ar.ini -f wav
 
 """
