@@ -7,7 +7,6 @@ sudo apt install libasound2-dev
 pip install --upgrade pocketsphinx
 """
 
-
 import argparse
 import datetime
 import glob
@@ -76,6 +75,20 @@ def split_list(data, n_parts):
         return parts
 
 
+def chunks(l, n):
+    """Yield successive n-sized chunks from l."""
+    for j in range(0, len(l), n):
+        yield l[j:j + n]
+
+
+def split_list_on_cpus(data_list, cpus_number):
+    list_size = len(data_list)
+    if list_size <= cpus_number:
+        return [data_list]
+    else:
+        return chunks(data_list, cpus_number)
+
+
 parser = argparse.ArgumentParser(description='This decoder is based CMU Sphinx (works offline) engine provided by '
                                              'speech_recognition python package.')  # type: ArgumentParser
 parser.add_argument('-i', '--indir', type=str,
@@ -95,7 +108,7 @@ if __name__ == '__main__':
         print("no {} found in {}".format(args.format, in_dir))
         sys.exit(-1)
     print('# of audio files: {}'.format(num_files))
-    audio_file_lists = split_list(audio_files, cpu_count)
+    audio_file_lists = split_list_on_cpus(audio_files, cpu_count)
     print('number of parts: {}'.format(len(audio_file_lists)))
     for i, p in enumerate(audio_file_lists):
         print('part {} has {} audio segments'.format(i, len(p)))
@@ -136,12 +149,11 @@ if __name__ == '__main__':
     decode_time_str = "decode time: {}".format(datetime.timedelta(seconds=decode_time))
     print(decode_time_str)
 
-
-
 """
 How to run: 
 python pocketsphinx_parellel_decoder.py -i wav/en -c conf/config_en.ini -f wav 
 python pocketsphinx_parellel_decoder.py -i wav/ar -c conf/config_ar.ini -f wav 
 python pocketsphinx_parellel_decoder.py -i ~/wav_files_less_than_1m/ -c conf/config_ar.ini -f wav
+python cmu-sphinx-decoder/pocketsphinx_parellel_decoder.py -i wav_files_less_than_1m/ -f wav -c cmu-sphinx-decoder/conf/config_ar.ini
 
 """
