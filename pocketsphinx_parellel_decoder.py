@@ -86,7 +86,7 @@ def split_list_on_cpus(data_list, cpus_number):
     if list_size <= cpus_number:
         return [data_list]
     else:
-        return chunks(data_list, cpus_number)
+        return list(chunks(data_list, cpus_number))
 
 
 parser = argparse.ArgumentParser(description='This decoder is based CMU Sphinx (works offline) engine provided by '
