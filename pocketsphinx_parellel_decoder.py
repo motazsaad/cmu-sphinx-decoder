@@ -10,6 +10,7 @@ pip install --upgrade pocketsphinx
 import argparse
 import datetime
 import glob
+import io
 import multiprocessing
 import os
 import sys
@@ -42,9 +43,18 @@ def load_decoder(model_config):
 
 def decode_audio(audio_file):
     decode_result = {}
-    audio_segment = AudioSegment.from_file(audio_file, format=args.format)
-    duration = audio_segment.duration_seconds
-    wav_stream = open(audio_file, 'rb')
+    audio_segment = AudioSegment.from_file(audio_file)
+    duration = '{0:.2f}'.format(audio_segment.duration_seconds)
+    if not audio_file.endswith('.wav'):
+        print('converting {} to wav'.format(audio_file))
+        wav_in_RAM = io.BytesIO()
+        f = io.BytesIO()
+        data = audio_segment.raw_data
+        wav_in_RAM.write(data)
+        wav_in_RAM.seek(0)
+        wav_stream = wav_in_RAM
+    else:
+        wav_stream = open(audio_file, 'rb')
     my_decoder.start_utt()
     while True:
         buf = wav_stream.read(1024)
@@ -94,18 +104,17 @@ parser = argparse.ArgumentParser(description='This decoder is based CMU Sphinx (
 parser.add_argument('-i', '--indir', type=str,
                     help='input wave directory', required=True)
 parser.add_argument('-c', '--conf', type=str, help='configuration file', required=True)
-parser.add_argument('-f', '--format', type=str, choices=['wav', 'mp4'],
-                    help='audio format (wav or mp4)', required=True)
+
 
 if __name__ == '__main__':
     cpu_count = os.cpu_count()
     print('number of CPUs: {}'.format(cpu_count))
     args = parser.parse_args()
     in_dir = args.indir
-    audio_files = sorted(glob.glob(os.path.join(in_dir, '*.{}'.format(args.format))))
+    audio_files = sorted(glob.glob(os.path.join(in_dir, '*.*')))
     num_files = len(audio_files)
     if num_files == 0:
-        print("no {} found in {}".format(args.format, in_dir))
+        print("no files found in {}".format(in_dir))
         sys.exit(-1)
     print('# of audio files: {}'.format(num_files))
     audio_file_lists = split_list_on_cpus(audio_files, cpu_count)
@@ -151,9 +160,9 @@ if __name__ == '__main__':
 
 """
 How to run: 
-python pocketsphinx_parellel_decoder.py -i wav/en -c conf/config_en.ini -f wav 
-python pocketsphinx_parellel_decoder.py -i wav/ar -c conf/config_ar.ini -f wav 
-python pocketsphinx_parellel_decoder.py -i ~/wav_files_less_than_1m/ -c conf/config_ar.ini -f wav
-python cmu-sphinx-decoder/pocketsphinx_parellel_decoder.py -i wav_files_less_than_1m/ -f wav -c cmu-sphinx-decoder/conf/config_ar.ini
-
+python pocketsphinx_parellel_decoder.py -i wav/en -c conf/config_en.ini 
+python pocketsphinx_parellel_decoder.py -i wav/ar -c conf/config_ar.ini
+python pocketsphinx_parellel_decoder.py -i ~/wav_files_less_than_1m/ -c conf/config_ar.ini
+python cmu-sphinx-decoder/pocketsphinx_parellel_decoder.py -i wav_files_less_than_1m/ -c cmu-sphinx-decoder/conf/config_ar.ini
+python pocketsphinx_parellel_decoder.py -i ~/ts_sample_files/ -c conf/config_ar.ini
 """
