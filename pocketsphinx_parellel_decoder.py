@@ -44,19 +44,22 @@ def load_decoder(model_config):
 def decode_audio(audio_file):
     decode_result = {}
     audio_segment = AudioSegment.from_file(audio_file)
+    # audio_segment = audio_segment.set_frame_rate(16000)
+    # audio_segment = audio_segment.set_channels(1)
     duration = audio_segment.duration_seconds
     conversion_time = 0
     if not audio_file.endswith('.wav'):
         conversion_start_time = time.time()
-        print('converting {} to wav'.format(audio_file))
+        # print('converting {} to wav'.format(audio_file))
         wav_in_ram = io.BytesIO()
-        f = io.BytesIO()
-        data = audio_segment.raw_data
-        wav_in_ram.write(data)
+        # data = audio_segment.raw_data
+        # wav_in_ram.write(data)
+        # wav_in_ram.seek(0)
+        audio_segment.export(wav_in_ram, format="wav", parameters=['-ar', '16000', '-ac', '1'])
         wav_in_ram.seek(0)
         wav_stream = wav_in_ram
         conversion_time = time.time() - conversion_start_time
-        print('{} has been converted to wav'.format(audio_file))
+        # print('{} has been converted to wav'.format(audio_file))
     else:
         wav_stream = open(audio_file, 'rb')
     decode_time_start_time = time.time()
@@ -133,7 +136,8 @@ if __name__ == '__main__':
     config = configparser.ConfigParser()
     conf_file = args.conf
     if not os.path.exists(conf_file):
-        print('{} doest not exisit'.format(conf_file))
+        print('ERROR: {} doest not exisit'.format(conf_file))
+        sys.exit(-1)
     config.read(conf_file)
     print('loading decoder models ...')
     my_decoder = load_decoder(config)
@@ -150,12 +154,7 @@ if __name__ == '__main__':
         for r in result:
             results.update(r)
     ##########################################
-    if args.outdir:
-        for my_file, v in results.items():
-            file_duration, file_decode_time, file_conversion_time, transcription = v
-            with open(my_file + '.txt', mode='w') as file_writer:
-                file_writer.write(transcription)
-    else:
+    if not args.outdir:
         total_duration = 0
         total_decode_time = 0
         total_conversion_time = 0
@@ -173,6 +172,20 @@ if __name__ == '__main__':
         print('total audio duration: {}'.format(datetime.timedelta(seconds=total_duration)))
         print('total decode time: {}'.format(datetime.timedelta(seconds=total_decode_time)))
         print('total conversion time: {}'.format(datetime.timedelta(seconds=total_conversion_time)))
+    else:
+        if not os.path.exists(args.outdir):
+            try:
+                os.mkdir(args.outdir)
+                print('{} created successfully'.format(args.outdir))
+            except OSError as error:
+                print('Error: {}'.format(error))
+                sys.exit(-1)
+        for my_file, v in results.items():
+            file_duration, file_decode_time, file_conversion_time, transcription = v
+            out_file_name, ext = os.path.splitext(os.path.basename(my_file))
+            with open(os.path.join(args.outdir, out_file_name + '.txt'), mode='w') as file_writer:
+                file_writer.write(transcription)
+        print('done!')
 
 """
 How to run: 
@@ -183,5 +196,8 @@ python cmu-sphinx-decoder/pocketsphinx_parellel_decoder.py -i wav_files_less_tha
 python pocketsphinx_parellel_decoder.py -i ~/ts_sample_files/ -c conf/config_ar.ini
 
 python pocketsphinx_parellel_decoder.py -i ~/PycharmProjects/jsc-news-broadcast/mp3/ -c conf/config_ar.ini
+
+
+python cmu-sphinx-decoder/pocketsphinx_parellel_decoder.py -i jsc-news-broadcast/wav_split/headlines_10pm_29_07_2017/mp3/ -c cmu-sphinx-decoder/conf/config_ar.ini -o out
 
 """
