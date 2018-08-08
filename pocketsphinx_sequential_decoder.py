@@ -133,10 +133,6 @@ if __name__ == '__main__':
         print("no files found in {}".format(in_dir))
         sys.exit(-1)
     print('# of audio files: {}'.format(num_files))
-    audio_file_lists = split_list_on_cpus(audio_files, cpu_count)
-    print('number of parts: {}'.format(len(audio_file_lists)))
-    for i, p in enumerate(audio_file_lists):
-        print('part {} has {} audio segments'.format(i, len(p)))
     ###################################################
     # load configuration
     config = configparser.ConfigParser()
@@ -153,13 +149,10 @@ if __name__ == '__main__':
     print('processing lists')
     print('input directory: {}'.format(in_dir))
     results = {}
-    for i, audio_list in enumerate(audio_file_lists):
-        print('process {} files in parallel in part {}'.format(len(audio_list), i))
-        pool = multiprocessing.Pool(processes=cpu_count)
-        result = pool.map(decode_audio, audio_list)
-        # print(result)
-        for r in result:
-            results.update(r)
+    for i, audio_file in enumerate(audio_files):
+        print('decode {}'.format(audio_file))
+        result = decode_audio(audio_file)
+        results.update(result)
     ##########################################
     if not args.outdir:
         total_duration = 0
@@ -196,25 +189,24 @@ if __name__ == '__main__':
 
 """
 How to run: 
-python pocketsphinx_parellel_decoder.py -i wav/en -c conf/config_en.ini 
-python pocketsphinx_parellel_decoder.py -i wav/ar -c conf/config_ar.ini
-python pocketsphinx_parellel_decoder.py -i ~/wav_files_less_than_1m/ -c conf/config_ar.ini
-python cmu-sphinx-decoder/pocketsphinx_parellel_decoder.py -i wav_files_less_than_1m/ -c cmu-sphinx-decoder/conf/config_ar.ini
-python pocketsphinx_parellel_decoder.py -i ~/ts_sample_files/ -c conf/config_ar.ini
-
-python pocketsphinx_parellel_decoder.py -i ~/PycharmProjects/jsc-news-broadcast/mp3/ -c conf/config_ar.ini
+source ~/py3env/bin/activate
+python ~/PycharmProjects/cmu-sphinx-decoder/pocketsphinx_sequential_decoder.py -i ~/ts_sample_files/wav -c ~/PycharmProjects/cmu-sphinx-decoder/conf/config_ar.ini 
 
 
-python cmu-sphinx-decoder/pocketsphinx_parellel_decoder.py -i jsc-news-broadcast/wav_split/headlines_10pm_29_07_2017/mp3/ -c cmu-sphinx-decoder/conf/config_ar.ini -o out
+
+~/ts_sample_files/wav
+total audio duration: 0:01:30.005625
+total decode time: 0:01:13.909128
+total conversion time: 0:00:00
 
 source ~/py3env/bin/activate
-python ~/PycharmProjects/cmu-sphinx-decoder/pocketsphinx_parellel_decoder.py -i ~/PycharmProjects/jsc-news-broadcast/wav_split/headlines_10pm_29_07_2017/mp3/wav -c ~/PycharmProjects/cmu-sphinx-decoder/conf/config_ar.ini -o out
+python ~/PycharmProjects/cmu-sphinx-decoder/pocketsphinx_sequential_decoder.py -i ~/wav_files_less_than_1m -c ~/PycharmProjects/cmu-sphinx-decoder/conf/config_ar.ini 
+
+~/wav_files_less_than_1m
+total audio duration: 0:06:06.040000
+total decode time: 0:04:10.761857
+total conversion time: 0:00:00
 
 
-source ~/py3env/bin/activate
-python ~/PycharmProjects/cmu-sphinx-decoder/pocketsphinx_parellel_decoder.py -i ~/ts_sample_files/ -c ~/PycharmProjects/cmu-sphinx-decoder/conf/config_ar.ini -o out 
-
-source ~/py3env/bin/activate
-python ~/PycharmProjects/cmu-sphinx-decoder/pocketsphinx_parellel_decoder.py -i ~/ts_sample_files/wav -c ~/PycharmProjects/cmu-sphinx-decoder/conf/config_ar.ini -o out 
 
 """
