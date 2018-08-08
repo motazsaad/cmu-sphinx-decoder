@@ -36,7 +36,7 @@ pocketsphinx_continuous -infile ${wav_file} -hmm ${hmm} -lm ${lm} -dict ${dict} 
 
 done
 decode_duration=$SECONDS
-echo "$(($decode_duration / 60)) minutes and $(($decode_duration % 60)) seconds elapsed in decoding."
+echo "total decode time: $(($decode_duration / 60)) minutes and $(($decode_duration % 60)) seconds."
 
 
 total_duration=0.0
