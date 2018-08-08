@@ -55,5 +55,5 @@ echo "$(($decode_duration / 60)) minutes and $(($decode_duration % 60)) seconds 
 #-logfn ${log_file} > ${text_out}
 
 
-
+# bash pocketsphinx_sequential_decoder_bash.sh conf/config_ar.cfg ~/wav_files_less_than_1m/ out.txt
 
