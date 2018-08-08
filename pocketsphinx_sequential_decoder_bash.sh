@@ -49,8 +49,8 @@ do
     filename=$(basename "$file")
     #printf "duration: %s sample rate: %s channels: %d file:%s\n" "$duration" "$s_rate" "$channels" "$filename"
 done
-printf "total wav duration in minutes: %.2f minutes" $(python -c "print($total_duration/60)")
-printf "total wav duration in hours: %.2f minutes" $(python -c "print($total_duration/60/60)")
+printf "total wav duration in minutes: %.2f minutes\n" $(python -c "print($total_duration/60)")
+printf "total wav duration in hours: %.2f minutes\n" $(python -c "print($total_duration/60/60)")
 
 
 
