@@ -39,6 +39,19 @@ decode_duration=$SECONDS
 echo "$(($decode_duration / 60)) minutes and $(($decode_duration % 60)) seconds elapsed in decoding."
 
 
+total_duration=0.0
+for file in ${wav_dir}/*.wav
+do
+    duration=$(sox --i -D "$file")
+    total_duration=$(python -c "print($total_duration+$duration)")
+    s_rate=$(sox --i -r "$file")
+    channels=$(sox --i -c "$file")
+    filename=$(basename "$file")
+    #printf "duration: %s sample rate: %s channels: %d file:%s\n" "$duration" "$s_rate" "$channels" "$filename"
+done
+printf "total duration: in minutes: %.2f minutes \t in hours: %.2f hours\n" \
+$(python -c "print($total_duration/60)") $(python -c "print($total_duration/60/60)")
+
 
 
 
