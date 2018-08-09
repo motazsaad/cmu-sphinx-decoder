@@ -9,17 +9,20 @@ sudo apt install libasound2-dev
 pip install --upgrade pocketsphinx
 """
 
+# pocketsphinx batch vs continuous:
+# https://github.com/cmusphinx/pocketsphinx/issues/116
+
+
 import argparse
+import configparser
 import datetime
 import glob
 import io
-import multiprocessing
 import os
 import sys
 import time
-import configparser
 
-from pocketsphinx import DefaultConfig, Decoder, get_model_path
+from pocketsphinx import DefaultConfig, Decoder
 from pydub import AudioSegment
 
 

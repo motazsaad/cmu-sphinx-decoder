@@ -23,21 +23,18 @@ out_dir=${3}
 # a handy SECONDS builtin variable that tracks the number of seconds that have passed since the shell was started.
 SECONDS=0
 
-for wav_file in ${wav_dir}/*.wav
-do
-printf "wav: %s\n" ${wav_file}
-printf "wave duration: %s\n" $(sox --i ${wav_file} | grep 'Duration' | awk '{print $3}')
-#printf "out file: %s\n" ${out}
+#pocketsphinx_batch -infile ${wav_file} -hmm ${hmm} -lm ${lm} -dict ${dict} -logfn ${log} #> ${out}
 
+pocketsphinx_batch \
+ -adcin yes \
+ -cepdir ${wav_dir} \
+ -cepext .wav \
+ -ctl ${wav_dir}.fileids \
+ -lm ${lm} \
+ -dict ${dict} \
+ -hmm ${hmm} \
+ -hyp test.hyp
 
-
-# it works fine with en-us model but it does not work with Arabic model.
-pocketsphinx_continuous -infile ${wav_file} -hmm ${hmm} -lm ${lm} -dict ${dict} -logfn ${log} #> ${out}
-
-
-done
-decode_duration=$SECONDS
-echo "total decode time: $(($decode_duration / 60)) minutes and $(($decode_duration % 60)) seconds."
 
 
 total_duration=0.0
