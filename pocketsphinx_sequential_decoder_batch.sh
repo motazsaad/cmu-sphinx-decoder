@@ -33,7 +33,8 @@ pocketsphinx_batch \
  -lm ${lm} \
  -dict ${dict} \
  -hmm ${hmm} \
- -hyp test.hyp
+ -hyp test.hyp \
+ -longfn ${log}
 
 
 
