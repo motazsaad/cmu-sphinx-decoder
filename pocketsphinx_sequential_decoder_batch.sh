@@ -34,7 +34,7 @@ pocketsphinx_batch \
  -dict ${dict} \
  -hmm ${hmm} \
  -hyp test.hyp \
- -longfn ${log}
+ -logfn ${log}
 
 
 
