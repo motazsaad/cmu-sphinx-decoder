@@ -26,7 +26,7 @@ import logging
 
 from pocketsphinx import DefaultConfig, Decoder
 from pydub import AudioSegment
-import decoderutil
+import myDecoder
 
 logging.basicConfig(format='%(levelname)s: %(asctime)s %(message)s', level=logging.INFO)
 
@@ -58,7 +58,7 @@ if __name__ == '__main__':
         sys.exit(-1)
     config.read(conf_file)
     print('loading decoder models ...')
-    my_decoder = decoderutil.load_decoder(config)
+    my_decoder = myDecoder.load_decoder(config)
     print('decoder has been loaded ...')
     ###################################################
     # process lists:
@@ -68,10 +68,10 @@ if __name__ == '__main__':
     for i, audio_file in enumerate(audio_files):
         if args.log:
             logging.info('decode {}'.format(audio_file))
-        result = decoderutil.decode_audio(audio_file, my_decoder)
+        result = myDecoder.decode_audio(audio_file, my_decoder)
         results.update(result)
     ##########################################
-    decoderutil.print_results(sorted(results), in_dir)
+    myDecoder.print_results(sorted(results), in_dir)
     print('done!')
 
 """
