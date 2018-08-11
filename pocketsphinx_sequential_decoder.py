@@ -28,7 +28,7 @@ from pocketsphinx import DefaultConfig, Decoder
 from pydub import AudioSegment
 import decoderutil
 
-logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
+logging.basicConfig(format='%(levelname)s: %(asctime)s %(message)s', level=logging.INFO)
 
 parser = argparse.ArgumentParser(description='This decoder is based CMU Sphinx (works offline) engine provided by '
                                              'speech_recognition python package.')  # type: ArgumentParser
