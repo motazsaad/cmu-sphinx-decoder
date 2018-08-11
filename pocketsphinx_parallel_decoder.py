@@ -196,25 +196,25 @@ if __name__ == '__main__':
 
 """
 How to run: 
-python pocketsphinx_parellel_decoder.py -i wav/en -c conf/config_en.ini 
-python pocketsphinx_parellel_decoder.py -i wav/ar -c conf/config_ar.ini
-python pocketsphinx_parellel_decoder.py -i ~/wav_files_less_than_1m/ -c conf/config_ar.ini
-python cmu-sphinx-decoder/pocketsphinx_parellel_decoder.py -i wav_files_less_than_1m/ -c cmu-sphinx-decoder/conf/config_ar.ini
-python pocketsphinx_parellel_decoder.py -i ~/ts_sample_files/ -c conf/config_ar.ini
+python pocketsphinx_parallel_decoder.py -i wav/en -c conf/config_en.ini 
+python pocketsphinx_parallel_decoder.py -i wav/ar -c conf/config_ar.ini
+python pocketsphinx_parallel_decoder.py -i ~/wav_files_less_than_1m/ -c conf/config_ar.ini
+python cmu-sphinx-decoder/pocketsphinx_parallel_decoder.py -i wav_files_less_than_1m/ -c cmu-sphinx-decoder/conf/config_ar.ini
+python pocketsphinx_parallel_decoder.py -i ~/ts_sample_files/ -c conf/config_ar.ini
 
-python pocketsphinx_parellel_decoder.py -i ~/PycharmProjects/jsc-news-broadcast/mp3/ -c conf/config_ar.ini
+python pocketsphinx_parallel_decoder.py -i ~/PycharmProjects/jsc-news-broadcast/mp3/ -c conf/config_ar.ini
 
 
-python cmu-sphinx-decoder/pocketsphinx_parellel_decoder.py -i jsc-news-broadcast/wav_split/headlines_10pm_29_07_2017/mp3/ -c cmu-sphinx-decoder/conf/config_ar.ini -o out
-
-source ~/py3env/bin/activate
-python ~/PycharmProjects/cmu-sphinx-decoder/pocketsphinx_parellel_decoder.py -i ~/PycharmProjects/jsc-news-broadcast/wav_split/headlines_10pm_29_07_2017/mp3/wav -c ~/PycharmProjects/cmu-sphinx-decoder/conf/config_ar.ini -o out
-
+python cmu-sphinx-decoder/pocketsphinx_parallel_decoder.py -i jsc-news-broadcast/wav_split/headlines_10pm_29_07_2017/mp3/ -c cmu-sphinx-decoder/conf/config_ar.ini -o out
 
 source ~/py3env/bin/activate
-python ~/PycharmProjects/cmu-sphinx-decoder/pocketsphinx_parellel_decoder.py -i ~/ts_sample_files/ -c ~/PycharmProjects/cmu-sphinx-decoder/conf/config_ar.ini -o out 
+python ~/PycharmProjects/cmu-sphinx-decoder/pocketsphinx_parallel_decoder.py -i ~/PycharmProjects/jsc-news-broadcast/wav_split/headlines_10pm_29_07_2017/mp3/wav -c ~/PycharmProjects/cmu-sphinx-decoder/conf/config_ar.ini -o out
+
 
 source ~/py3env/bin/activate
-python ~/PycharmProjects/cmu-sphinx-decoder/pocketsphinx_parellel_decoder.py -i ~/ts_sample_files/wav -c ~/PycharmProjects/cmu-sphinx-decoder/conf/config_ar.ini -o out 
+python ~/PycharmProjects/cmu-sphinx-decoder/pocketsphinx_parallel_decoder.py -i ~/ts_sample_files/ -c ~/PycharmProjects/cmu-sphinx-decoder/conf/config_ar.ini -o out 
+
+source ~/py3env/bin/activate
+python ~/PycharmProjects/cmu-sphinx-decoder/pocketsphinx_parallel_decoder.py -i ~/ts_sample_files/wav -c ~/PycharmProjects/cmu-sphinx-decoder/conf/config_ar.ini -o out 
 
 """
