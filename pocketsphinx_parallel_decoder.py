@@ -25,57 +25,16 @@ from pydub import AudioSegment
 import decoderUtils
 
 
-def decode_audio(audio_file):
-    decode_result = {}
-    audio_segment = AudioSegment.from_file(audio_file)
-    # audio_segment = audio_segment.set_frame_rate(16000)
-    # audio_segment = audio_segment.set_channels(1)
-    duration = audio_segment.duration_seconds
-    conversion_time = 0
-    if not audio_file.endswith('.wav'):
-        conversion_start_time = datetime.time.time()
-        # print('converting {} to wav'.format(audio_file))
-        wav_in_ram = io.BytesIO()
-        # data = audio_segment.raw_data
-        # wav_in_ram.write(data)
-        # wav_in_ram.seek(0)
-        audio_segment = audio_segment.set_frame_rate(16000)
-        audio_segment = audio_segment.set_channels(1)
-        print('ar: {}: ac: {} file: {}'.
-              format(audio_segment.frame_rate, audio_segment.channels, audio_file))
-        audio_segment.export(wav_in_ram, format="wav")
-        tmp_file_name = '/home/motaz/tmp/exported_waves/' + os.path.basename(audio_file) + '.wav'
-        audio_segment.export(tmp_file_name, format="wav")
-        wav_in_ram.seek(0)
-        wav_stream = wav_in_ram
-        conversion_time = time.time() - conversion_start_time
-        # print('{} has been converted to wav'.format(audio_file))
-    else:
-        wav_stream = open(audio_file, 'rb')
-    decode_time_start_time = datetime.time.time()
-    my_decoder.start_utt()
-    while True:
-        buf = wav_stream.read(1024)
-        if buf:
-            my_decoder.process_raw(buf, False, False)
-        else:
-            break
-    my_decoder.end_utt()
-    hypothesis = my_decoder.hyp()
-    try:
-        text = hypothesis.hypstr
-    except AttributeError:
-        text = ''
-    decode_time = time.time() - decode_time_start_time
-    decode_result[audio_file] = (duration, decode_time, conversion_time, text)
-    return decode_result
+def handle_audio(audio_file):
+    return decoderUtils.decode_audio(audio_file, my_decoder)
 
 
 parser = argparse.ArgumentParser(description='This decoder is based CMU Sphinx (works offline) engine provided by '
                                              'speech_recognition python package.')  # type: ArgumentParser
 parser.add_argument('-i', '--indir', type=str, help='input wave directory', required=True)
 parser.add_argument('-c', '--conf', type=str, help='configuration file', required=True)
-parser.add_argument('-o', '--outdir', type=str, help='output directory')
+parser.add_argument('-l', '--log', action='store_true')
+
 
 if __name__ == '__main__':
     cpu_count = os.cpu_count()
@@ -111,12 +70,12 @@ if __name__ == '__main__':
     for i, audio_list in enumerate(audio_file_lists):
         print('process {} files in parallel in part {}'.format(len(audio_list), i))
         pool = multiprocessing.Pool(processes=cpu_count)
-        result = pool.map(decode_audio, audio_list)
+        result = pool.map(handle_audio, audio_list)
         # print(result)
         for r in result:
             results.update(r)
     ##########################################
-    decoderUtils.print_results(sorted(results), in_dir)
+    decoderUtils.print_results(results, in_dir)
     print('done!')
     ##########################################
 
