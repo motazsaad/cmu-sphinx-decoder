@@ -71,7 +71,7 @@ if __name__ == '__main__':
         result = decoderutil.decode_audio(audio_file, my_decoder)
         results.update(result)
     ##########################################
-    decoderutil.print_results(results, in_dir)
+    decoderutil.print_results(sorted(results), in_dir)
     print('done!')
 
 """
