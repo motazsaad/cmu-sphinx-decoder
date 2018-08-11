@@ -43,7 +43,7 @@ if __name__ == '__main__':
     print('number of CPUs: {}'.format(cpu_count))
     args = parser.parse_args()
     in_dir = args.indir
-    audio_files = sorted(glob.glob(os.path.join(in_dir, '*.*')))
+    audio_files = sorted(glob.glob(os.path.join(in_dir, '*.*')))[:5]
     num_files = len(audio_files)
     if num_files == 0:
         print("no files found in {}".format(in_dir))
@@ -71,7 +71,7 @@ if __name__ == '__main__':
         result = decoderutil.decode_audio(audio_file, my_decoder)
         results.update(result)
     ##########################################
-    decoderutil.print_results(result, in_dir)
+    decoderutil.print_results(results, in_dir)
     print('done!')
 
 """

@@ -4,6 +4,8 @@ import time
 from pydub import AudioSegment
 import datetime
 import io
+import logging
+logging.basicConfig(format='%(levelname)s: %(asctime)s %(message)s', level=logging.INFO)
 
 
 def load_decoder(model_config):
@@ -102,14 +104,16 @@ def print_results(results, indir):
     total_duration = 0
     total_decode_time = 0
     total_conversion_time = 0
-    with open(indir + '.hyp', mode='w') as result_writer:
+    with open(os.path.normpath(indir) + '.hyp', mode='w') as result_writer:
+        logging.info('writing results to {}.hyp'.format(indir))
         for filename, v in results.items():
+            # print('debug: {} {}'.format(filename, v))
             file_duration, file_decode_time, file_conversion_time, transcription = v
             total_duration += file_duration
             total_decode_time += file_decode_time
             total_conversion_time += file_conversion_time
             fileid, ext = os.path.splitext(os.path.basename(filename))
-            fileid = '('+fileid+')'
+            fileid = ' ('+fileid+')\n'
             result_writer.write(transcription + fileid)
     print('total audio duration: {}'.format(datetime.timedelta(seconds=total_duration)))
     print('total decode time: {}'.format(datetime.timedelta(seconds=total_decode_time)))
