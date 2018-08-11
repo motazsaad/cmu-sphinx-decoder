@@ -20,7 +20,8 @@ import sys
 import time
 import configparser
 
-import decoderutil
+import myDecoder
+import myUtils
 
 from pocketsphinx import DefaultConfig, Decoder, get_model_path
 from pydub import AudioSegment
@@ -47,7 +48,7 @@ if __name__ == '__main__':
         print("no files found in {}".format(in_dir))
         sys.exit(-1)
     print('# of audio files: {}'.format(num_files))
-    audio_file_lists = decoderutil.split_list_on_cpus(audio_files, cpu_count)
+    audio_file_lists = myUtils.split_list_on_cpus(audio_files, cpu_count)
     print('number of parts: {}'.format(len(audio_file_lists)))
     for i, p in enumerate(audio_file_lists):
         print('part {} has {} audio segments'.format(i, len(p)))
@@ -60,7 +61,7 @@ if __name__ == '__main__':
         sys.exit(-1)
     config.read(conf_file)
     print('loading decoder models ...')
-    my_decoder = decoderutil.load_decoder(config)
+    my_decoder = myDecoder(config)
     print('decoder has been loaded ...')
     ###################################################
     # process lists:
@@ -70,13 +71,13 @@ if __name__ == '__main__':
     for i, audio_list in enumerate(audio_file_lists):
         print('process {} files in parallel in part {}'.format(len(audio_list), i))
         pool = multiprocessing.Pool(processes=cpu_count)
-        result = pool.map(decoderutil.decode_audio, audio_list, my_decoder)
+        result = pool.map(myDecoder.decode_audio, audio_list)
         # print(result)
         for r in result:
             results.update(r)
     ##########################################
     ##########################################
-    decoderutil.print_results(sorted(results), in_dir)
+    myDecoder.print_results(sorted(results), in_dir)
     print('done!')
 
 """
