@@ -21,17 +21,25 @@ import io
 import os
 import sys
 import time
+import logging
+
 
 from pocketsphinx import DefaultConfig, Decoder
 from pydub import AudioSegment
 import decoderutil
+
+logging.basicConfig(format='%(levelname): %(asctime)s %(message)s')
+
+logger = logging.getLogger('cmu_sphinx_decoder')
+logger.setLevel(logging.INFO)
 
 parser = argparse.ArgumentParser(description='This decoder is based CMU Sphinx (works offline) engine provided by '
                                              'speech_recognition python package.')  # type: ArgumentParser
 parser.add_argument('-i', '--indir', type=str,
                     help='input wave directory', required=True)
 parser.add_argument('-c', '--conf', type=str, help='configuration file', required=True)
-#parser.add_argument('-o', '--outdir', type=str, help='output directory')
+parser.add_argument('-l', '--log', action='store_true')
+# parser.add_argument('-o', '--outdir', type=str, help='output directory')
 
 if __name__ == '__main__':
     cpu_count = os.cpu_count()
@@ -61,7 +69,8 @@ if __name__ == '__main__':
     print('input directory: {}'.format(in_dir))
     results = {}
     for i, audio_file in enumerate(audio_files):
-        print('decode {}'.format(audio_file))
+        if args.log:
+            logger.info('decode {}'.format(audio_file))
         result = decoderutil.decode_audio(audio_file, my_decoder)
         results.update(result)
     ##########################################
