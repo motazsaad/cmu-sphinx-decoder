@@ -99,13 +99,13 @@ def split_list_on_cpus(data_list, cpus_number):
 
 
 def print_results(results, indir, outdir):
-    if not os.path.exists(outdir):
-        try:
-            os.mkdir(outdir)
-            print('{} created successfully'.format(outdir))
-        except OSError as error:
-            print('Error: {}'.format(error))
-            sys.exit(-1)
+    # if not os.path.exists(outdir):
+    #     try:
+    #         os.mkdir(outdir)
+    #         print('{} created successfully'.format(outdir))
+    #     except OSError as error:
+    #         print('Error: {}'.format(error))
+    #         sys.exit(-1)
     total_duration = 0
     total_decode_time = 0
     total_conversion_time = 0

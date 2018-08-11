@@ -31,7 +31,7 @@ parser = argparse.ArgumentParser(description='This decoder is based CMU Sphinx (
 parser.add_argument('-i', '--indir', type=str,
                     help='input wave directory', required=True)
 parser.add_argument('-c', '--conf', type=str, help='configuration file', required=True)
-parser.add_argument('-o', '--outdir', type=str, help='output directory')
+#parser.add_argument('-o', '--outdir', type=str, help='output directory')
 
 if __name__ == '__main__':
     cpu_count = os.cpu_count()
@@ -65,38 +65,8 @@ if __name__ == '__main__':
         result = decoderutil.decode_audio(audio_file, my_decoder)
         results.update(result)
     ##########################################
-    if not args.outdir:
-        total_duration = 0
-        total_decode_time = 0
-        total_conversion_time = 0
-        for k, v in results.items():
-            print('file: {}'.format(k))
-            file_duration, file_decode_time, file_conversion_time, transcription = v
-            print('transcription: \n{}'.format(transcription))
-            print('duration: {0:.2f}'.format(file_duration))
-            print('decode time: {0:.2f}'.format(file_decode_time))
-            print('conversion time: {0:.2f}'.format(file_conversion_time))
-            print('######################################')
-            total_duration += file_duration
-            total_decode_time += file_decode_time
-            total_conversion_time += file_conversion_time
-        print('total audio duration: {}'.format(datetime.timedelta(seconds=total_duration)))
-        print('total decode time: {}'.format(datetime.timedelta(seconds=total_decode_time)))
-        print('total conversion time: {}'.format(datetime.timedelta(seconds=total_conversion_time)))
-    else:
-        if not os.path.exists(args.outdir):
-            try:
-                os.mkdir(args.outdir)
-                print('{} created successfully'.format(args.outdir))
-            except OSError as error:
-                print('Error: {}'.format(error))
-                sys.exit(-1)
-        for my_file, v in results.items():
-            file_duration, file_decode_time, file_conversion_time, transcription = v
-            out_file_name, ext = os.path.splitext(os.path.basename(my_file))
-            with open(os.path.join(args.outdir, out_file_name + '.txt'), mode='w') as file_writer:
-                file_writer.write(transcription)
-        print('done!')
+    decoderutil.print_results(result, in_dir)
+    print('done!')
 
 """
 How to run: 
