@@ -1,7 +1,29 @@
+import io
 import logging
 import os
 import datetime
+from pocketsphinx import DefaultConfig, Decoder
+from pydub import AudioSegment
+
 logging.basicConfig(format='%(levelname)s: %(asctime)s %(message)s', level=logging.INFO)
+
+def load_decoder(model_config):
+    # Create a decoder with certain model
+    pocketsphinx_config = DefaultConfig()
+    model_name = model_config.sections()[0]
+    hmm = model_config[model_name]['hmm']
+    dict = model_config[model_name]['dict']
+    lm = model_config[model_name]['lm']
+    logfn = model_config[model_name]['log']
+    print('hmm:', hmm)
+    print('lm:', lm)
+    print('dict:', dict)
+    pocketsphinx_config.set_string('-hmm', hmm)
+    pocketsphinx_config.set_string('-lm', lm)
+    pocketsphinx_config.set_string('-dict', dict)
+    pocketsphinx_config.set_string('-logfn', logfn)
+    decoder_engine = Decoder(pocketsphinx_config)
+    return decoder_engine
 
 
 def split_list(data, n_parts):

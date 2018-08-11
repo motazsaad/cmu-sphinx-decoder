@@ -22,24 +22,7 @@ import configparser
 from pocketsphinx import DefaultConfig, Decoder, get_model_path
 from pydub import AudioSegment
 
-
-def load_decoder(model_config):
-    # Create a decoder with certain model
-    pocketsphinx_config = DefaultConfig()
-    model_name = model_config.sections()[0]
-    hmm = model_config[model_name]['hmm']
-    dict = model_config[model_name]['dict']
-    lm = model_config[model_name]['lm']
-    logfn = model_config[model_name]['log']
-    print('hmm:', hmm)
-    print('lm:', lm)
-    print('dict:', dict)
-    pocketsphinx_config.set_string('-hmm', hmm)
-    pocketsphinx_config.set_string('-lm', lm)
-    pocketsphinx_config.set_string('-dict', dict)
-    pocketsphinx_config.set_string('-logfn', logfn)
-    decoder_engine = Decoder(pocketsphinx_config)
-    return decoder_engine
+import decoderUtils
 
 
 def decode_audio(audio_file):
@@ -50,7 +33,7 @@ def decode_audio(audio_file):
     duration = audio_segment.duration_seconds
     conversion_time = 0
     if not audio_file.endswith('.wav'):
-        conversion_start_time = time.time()
+        conversion_start_time = datetime.time.time()
         # print('converting {} to wav'.format(audio_file))
         wav_in_ram = io.BytesIO()
         # data = audio_segment.raw_data
@@ -69,7 +52,7 @@ def decode_audio(audio_file):
         # print('{} has been converted to wav'.format(audio_file))
     else:
         wav_stream = open(audio_file, 'rb')
-    decode_time_start_time = time.time()
+    decode_time_start_time = datetime.time.time()
     my_decoder.start_utt()
     while True:
         buf = wav_stream.read(1024)
@@ -88,37 +71,9 @@ def decode_audio(audio_file):
     return decode_result
 
 
-def split_list(data, n_parts):
-    if len(data) <= n_parts:
-        return [data]
-    else:
-        part_size = int(len(data) / n_parts)
-        # print('part size {}'.format(part_size))
-        parts = [data[x:x + part_size] for x in range(0, len(data), part_size)]
-        if len(parts[-1]) < part_size:
-            parts[-2].extend(parts[-1])
-            del parts[-1]
-        return parts
-
-
-def chunks(l, n):
-    """Yield successive n-sized chunks from l."""
-    for j in range(0, len(l), n):
-        yield l[j:j + n]
-
-
-def split_list_on_cpus(data_list, cpus_number):
-    list_size = len(data_list)
-    if list_size <= cpus_number:
-        return [data_list]
-    else:
-        return list(chunks(data_list, cpus_number))
-
-
 parser = argparse.ArgumentParser(description='This decoder is based CMU Sphinx (works offline) engine provided by '
                                              'speech_recognition python package.')  # type: ArgumentParser
-parser.add_argument('-i', '--indir', type=str,
-                    help='input wave directory', required=True)
+parser.add_argument('-i', '--indir', type=str, help='input wave directory', required=True)
 parser.add_argument('-c', '--conf', type=str, help='configuration file', required=True)
 parser.add_argument('-o', '--outdir', type=str, help='output directory')
 
@@ -127,13 +82,13 @@ if __name__ == '__main__':
     print('number of CPUs: {}'.format(cpu_count))
     args = parser.parse_args()
     in_dir = args.indir
-    audio_files = sorted(glob.glob(os.path.join(in_dir, '*.*')))
+    audio_files = sorted(glob.glob(os.path.join(in_dir, '*.*')))[:5]
     num_files = len(audio_files)
     if num_files == 0:
         print("no files found in {}".format(in_dir))
         sys.exit(-1)
     print('# of audio files: {}'.format(num_files))
-    audio_file_lists = split_list_on_cpus(audio_files, cpu_count)
+    audio_file_lists = decoderUtils.split_list_on_cpus(audio_files, cpu_count)
     print('number of parts: {}'.format(len(audio_file_lists)))
     for i, p in enumerate(audio_file_lists):
         print('part {} has {} audio segments'.format(i, len(p)))
@@ -146,7 +101,7 @@ if __name__ == '__main__':
         sys.exit(-1)
     config.read(conf_file)
     print('loading decoder models ...')
-    my_decoder = load_decoder(config)
+    my_decoder = decoderUtils.load_decoder(config)
     print('decoder has been loaded ...')
     ###################################################
     # process lists:
@@ -161,38 +116,10 @@ if __name__ == '__main__':
         for r in result:
             results.update(r)
     ##########################################
-    if not args.outdir:
-        total_duration = 0
-        total_decode_time = 0
-        total_conversion_time = 0
-        for k, v in results.items():
-            print('file: {}'.format(k))
-            file_duration, file_decode_time, file_conversion_time, transcription = v
-            print('transcription: \n{}'.format(transcription))
-            print('duration: {0:.2f}'.format(file_duration))
-            print('decode time: {0:.2f}'.format(file_decode_time))
-            print('conversion time: {0:.2f}'.format(file_conversion_time))
-            print('######################################')
-            total_duration += file_duration
-            total_decode_time += file_decode_time
-            total_conversion_time += file_conversion_time
-        print('total audio duration: {}'.format(datetime.timedelta(seconds=total_duration)))
-        print('total decode time: {}'.format(datetime.timedelta(seconds=total_decode_time)))
-        print('total conversion time: {}'.format(datetime.timedelta(seconds=total_conversion_time)))
-    else:
-        if not os.path.exists(args.outdir):
-            try:
-                os.mkdir(args.outdir)
-                print('{} created successfully'.format(args.outdir))
-            except OSError as error:
-                print('Error: {}'.format(error))
-                sys.exit(-1)
-        for my_file, v in results.items():
-            file_duration, file_decode_time, file_conversion_time, transcription = v
-            out_file_name, ext = os.path.splitext(os.path.basename(my_file))
-            with open(os.path.join(args.outdir, out_file_name + '.txt'), mode='w') as file_writer:
-                file_writer.write(transcription)
-        print('done!')
+    decoderUtils.print_results(sorted(results), in_dir)
+    print('done!')
+    ##########################################
+
 
 """
 How to run: 
