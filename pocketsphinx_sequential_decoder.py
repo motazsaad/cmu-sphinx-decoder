@@ -1,5 +1,3 @@
-
-
 """
 This decoder is based on pocketsphinx python package.
 url: https://pypi.org/project/pocketsphinx/
@@ -15,17 +13,15 @@ pip install --upgrade pocketsphinx
 
 import argparse
 import configparser
-import datetime
 import glob
-import io
+import logging
 import os
 import sys
 import time
-import logging
+from collections import OrderedDict
 
-
-from pocketsphinx import DefaultConfig, Decoder
 from pydub import AudioSegment
+
 import decoderUtils
 
 logging.basicConfig(format='%(levelname)s: %(asctime)s %(message)s', level=logging.INFO)
@@ -36,10 +32,6 @@ parser.add_argument('-i', '--indir', type=str,
                     help='input wave directory', required=True)
 parser.add_argument('-c', '--conf', type=str, help='configuration file', required=True)
 parser.add_argument('-l', '--log', action='store_true')
-
-
-def handle_audio(audio_file):
-    return decoderUtils.decode_audio(audio_file, my_decoder)
 
 
 if __name__ == '__main__':
@@ -68,15 +60,21 @@ if __name__ == '__main__':
     # process lists:
     print('processing lists')
     print('input directory: {}'.format(in_dir))
-    results = {}
+    results = OrderedDict()
+    t1 = time.time()
     for i, audio_file in enumerate(audio_files):
         if args.log:
             logging.info('decode {}'.format(audio_file))
-        result = handle_audio(audio_file)
+        result = decoderUtils.decode_audio(audio_file, my_decoder)
         results.update(result)
+    ##########################################
+    t2 = time.time()
     ##########################################
     decoderUtils.print_results(results, in_dir)
     print('done!')
+    ##########################################
+    print('total process: {:.2f} minutes'.format((t2 - t1) / 60))
+    ##########################################
 
 """
 How to run: 
