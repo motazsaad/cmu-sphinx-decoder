@@ -105,7 +105,7 @@ def print_results(results, indir):
     total_duration = 0
     total_decode_time = 0
     total_conversion_time = 0
-    outfile = os.path.normpath(indir) + '.hyp'
+    outfile = os.path.normpath(indir) + '_py.hyp'
     with open(outfile, mode='w') as result_writer:
         logging.info('writing results to {}'.format(outfile))
         for filename, v in results.items():

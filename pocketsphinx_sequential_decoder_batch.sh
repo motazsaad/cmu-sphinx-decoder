@@ -33,7 +33,7 @@ pocketsphinx_batch \
  -lm ${lm} \
  -dict ${dict} \
  -hmm ${hmm} \
- -hyp ${wav_dir}.hyp \
+ -hyp ${wav_dir}_batch.hyp \
  -logfn ${log}
 
 
