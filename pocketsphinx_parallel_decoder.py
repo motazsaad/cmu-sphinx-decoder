@@ -70,7 +70,7 @@ if __name__ == '__main__':
     print('input directory: {}'.format(in_dir))
     results = {}
     for i, audio_list in enumerate(audio_file_lists):
-        print('process {} files in parallel in part {}'.format(len(audio_list), i))
+        logging.info('process {} files in parallel in part {}'.format(len(audio_list), i))
         pool = multiprocessing.Pool(processes=cpu_count)
         result = pool.map(handle_audio, audio_list)
         # print(result)
