@@ -23,11 +23,12 @@ from pocketsphinx import DefaultConfig, Decoder, get_model_path
 from pydub import AudioSegment
 
 import decoderUtils
-
+import logging
 
 def handle_audio(audio_file):
     return decoderUtils.decode_audio(audio_file, my_decoder)
 
+logging.basicConfig(format='%(levelname)s: %(asctime)s %(message)s', level=logging.INFO)
 
 parser = argparse.ArgumentParser(description='This decoder is based CMU Sphinx (works offline) engine provided by '
                                              'speech_recognition python package.')  # type: ArgumentParser
@@ -65,6 +66,7 @@ if __name__ == '__main__':
     ###################################################
     # process lists:
     print('processing lists')
+    logging.info('start the process')
     print('input directory: {}'.format(in_dir))
     results = {}
     for i, audio_list in enumerate(audio_file_lists):

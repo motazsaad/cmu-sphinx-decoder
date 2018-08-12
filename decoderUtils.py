@@ -38,7 +38,7 @@ def decode_audio(audio_file, my_decoder):
     duration = audio_segment.duration_seconds
     conversion_time = 0
     if not audio_file.endswith('.wav'):
-        conversion_start_time = time
+        conversion_start_time = time.time()
         # print('converting {} to wav'.format(audio_file))
         wav_in_ram = io.BytesIO()
         # data = audio_segment.raw_data
