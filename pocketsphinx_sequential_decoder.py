@@ -12,15 +12,10 @@ pip install --upgrade pocketsphinx
 
 
 import argparse
-import configparser
 import glob
 import logging
 import os
 import sys
-import time
-from collections import OrderedDict
-
-from pydub import AudioSegment
 
 import decoderUtils
 
@@ -33,12 +28,13 @@ parser.add_argument('-i', '--indir', type=str,
 parser.add_argument('-c', '--conf', type=str, help='configuration file', required=True)
 parser.add_argument('-l', '--log', action='store_true')
 
-
 if __name__ == '__main__':
     cpu_count = os.cpu_count()
     print('number of CPUs: {}'.format(cpu_count))
     args = parser.parse_args()
     in_dir = args.indir
+    conf_file = args.conf
+    log = args.log
     audio_files = sorted(glob.glob(os.path.join(in_dir, '*.*')))
     num_files = len(audio_files)
     if num_files == 0:
@@ -46,56 +42,6 @@ if __name__ == '__main__':
         sys.exit(-1)
     print('# of audio files: {}'.format(num_files))
     ###################################################
-    # load configuration
-    config = configparser.ConfigParser()
-    conf_file = args.conf
-    if not os.path.exists(conf_file):
-        print('ERROR: {} doest not exisit'.format(conf_file))
-        sys.exit(-1)
-    config.read(conf_file)
-    print('loading decoder models ...')
-    my_decoder = decoderUtils.load_decoder(config)
-    print('decoder has been loaded ...')
     ###################################################
-    # process lists:
-    print('processing lists')
-    print('input directory: {}'.format(in_dir))
-    results = OrderedDict()
-    t1 = time.time()
-    for i, audio_file in enumerate(audio_files):
-        if args.log:
-            logging.info('decode {}'.format(audio_file))
-        result = decoderUtils.decode_audio(audio_file, my_decoder)
-        results.update(result)
-    ##########################################
-    t2 = time.time()
-    ##########################################
-    decoderUtils.print_results(results, in_dir)
-    print('done!')
-    ##########################################
-    print('total process: {:.2f} minutes'.format((t2 - t1) / 60))
-    ##########################################
+    decoderUtils.decode_speech("seq", audio_files, conf_file, in_dir, log)
 
-"""
-How to run: 
-source ~/py3env/bin/activate
-python ~/PycharmProjects/cmu-sphinx-decoder/pocketsphinx_sequential_decoder.py -i ~/ts_sample_files/wav -c ~/PycharmProjects/cmu-sphinx-decoder/conf/config_ar.ini 
-
-
-
-~/ts_sample_files/wav
-total audio duration: 0:01:30.005625
-total decode time: 0:01:13.909128
-total conversion time: 0:00:00
-
-source ~/py3env/bin/activate
-python ~/PycharmProjects/cmu-sphinx-decoder/pocketsphinx_sequential_decoder.py -i ~/wav_files_less_than_1m -c ~/PycharmProjects/cmu-sphinx-decoder/conf/config_ar.ini 
-
-~/wav_files_less_than_1m
-total audio duration: 0:06:06.040000
-total decode time: 0:04:10.761857
-total conversion time: 0:00:00
-
-
-
-"""

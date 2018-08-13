@@ -3,8 +3,8 @@
 # sudo apt install pocketsphinx pocketsphinx-en-us
 # pocketsphinx_continuous -inmic yes
 
-if [ $# -ne 3 ]; then
-    echo "usage ${0} <configuration file> <wave dir> <out>";
+if [ $# -ne 2 ]; then
+    echo "usage ${0} <configuration file> <wave dir>";
     exit -1;
 fi
 
@@ -16,14 +16,12 @@ printf "dict:%s\n" ${dict}
 
 
 wav_dir=${2}
-out_dir=${3}
 
 
 
 # a handy SECONDS builtin variable that tracks the number of seconds that have passed since the shell was started.
 SECONDS=0
 
-#pocketsphinx_batch -infile ${wav_file} -hmm ${hmm} -lm ${lm} -dict ${dict} -logfn ${log} #> ${out}
 
 pocketsphinx_batch \
  -adcin yes \

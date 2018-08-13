@@ -1,12 +1,13 @@
-import io
+import configparser
+import gc
 import logging
 import os
+import sys
 import time
-from datetime import timedelta
-from pocketsphinx import DefaultConfig, Decoder
-from pydub import AudioSegment
 from collections import OrderedDict
 
+from pocketsphinx import DefaultConfig, Decoder
+from pydub import AudioSegment
 
 logging.basicConfig(format='%(levelname)s: %(asctime)s %(message)s', level=logging.INFO)
 
@@ -19,9 +20,6 @@ def load_decoder(model_config):
     dict = model_config[model_name]['dict']
     lm = model_config[model_name]['lm']
     logfn = model_config[model_name]['log']
-    print('hmm:', hmm)
-    print('lm:', lm)
-    print('dict:', dict)
     pocketsphinx_config.set_string('-hmm', hmm)
     pocketsphinx_config.set_string('-lm', lm)
     pocketsphinx_config.set_string('-dict', dict)
@@ -30,11 +28,21 @@ def load_decoder(model_config):
     return decoder_engine
 
 
-def split_list(data, n_parts):
-    if len(data) <= n_parts:
+def split_lists_with_n_elements(data_list, cpus_number):
+    """split into lists. Each list has n elements (n = # of cores)"""
+    list_size = len(data_list)
+    if list_size <= cpus_number:
+        return [data_list]
+    else:
+        return list(chunks(data_list, cpus_number))
+
+
+def split_n_lists(data, cpus_number):
+    """split list into n lists. (n = # of cores)"""
+    if len(data) <= cpus_number:
         return [data]
     else:
-        part_size = int(len(data) / n_parts)
+        part_size = int(len(data) / cpus_number)
         # print('part size {}'.format(part_size))
         parts = [data[x:x + part_size] for x in range(0, len(data), part_size)]
         if len(parts[-1]) < part_size:
@@ -49,26 +57,20 @@ def chunks(l, n):
         yield l[j:j + n]
 
 
-def split_list_on_cpus(data_list, cpus_number):
-    list_size = len(data_list)
-    if list_size <= cpus_number:
-        return [data_list]
-    else:
-        return list(chunks(data_list, cpus_number))
-
-
-def decode_audio(audio_file, decoder):
+def decode_audio(audio_file, decoder, log):
     decode_result = {}
     audio_segment = AudioSegment.from_file(audio_file)
     duration = audio_segment.duration_seconds
     if not audio_file.endswith('.wav'):
         conversion_start_time = time.time()
-        logging.info('converting {} to wav'.format(audio_file))
+        if log:
+            logging.info('converting {} to wav'.format(audio_file))
         audio_segment = audio_segment.set_frame_rate(16000)
         audio_segment = audio_segment.set_channels(1)
         tmp_file_name = '/tmp/' + os.path.basename(audio_file) + '.wav'
         audio_segment.export(tmp_file_name, format="wav")
-        logging.info('wav file exported to {}'.format(tmp_file_name))
+        if log:
+            logging.info('wav file exported to {}'.format(tmp_file_name))
         conversion_time = time.time() - conversion_start_time
         decode_time_start_time = time.time()
         text = decode_wav_stream(tmp_file_name, decoder)
@@ -101,23 +103,47 @@ def decode_wav_stream(wav_file, my_decoder):
     return text
 
 
-def print_results(results, indir):
+def print_results(myid, results, indir, log):
     total_duration = 0
     total_decode_time = 0
     total_conversion_time = 0
-    outfile = os.path.normpath(indir) + '_py.hyp'
+    outfile = "{}_{}_py.hyp".format(os.path.normpath(indir), str(myid))
     with open(outfile, mode='w') as result_writer:
         logging.info('writing results to {}'.format(outfile))
         for filename, v in results.items():
-            # print('{} {}'.format(filename, v))
-            logging.info('{} {}'.format(filename, v))
+            if log:
+                logging.info('{} {}'.format(filename, v))
             file_duration, file_decode_time, file_conversion_time, transcription = v
             total_duration += file_duration
             total_decode_time += file_decode_time
             total_conversion_time += file_conversion_time
             fileid, ext = os.path.splitext(os.path.basename(filename))
-            fileid = ' ('+fileid+')\n'
+            fileid = ' (' + fileid + ')\n'
             result_writer.write(transcription + fileid)
-    print('total audio duration: {:.2f} minutes'.format(total_duration/60))
-    print('total decode time: {:.2f} minutes'.format(total_decode_time/60))
-    print('total conversion time: {:.2f} minutes'.format(total_conversion_time/60))
+    print('ps: {}, pid: {}. Total audio duration: {:.2f} minutes'.format(myid, os.getgid(), (total_duration / 60)))
+    print('ps: {}, pid: {}. Total decode time: {:.2f} minutes'.format(myid, os.getgid(), (total_decode_time / 60)))
+    print('ps: {}, pid: {}. Total conversion time: {:.2f} minutes'.format(myid, os.getgid(), (total_conversion_time / 60)))
+
+
+def decode_speech(myid, audio_list, config, in_dir, log):
+    logging.info('decoder of process {} with pid {} has been started ...'.format(myid, os.getpid()))
+    if log:
+        logging.info('input directory: {}'.format(in_dir))
+    my_decoder = load_decoder(config)
+    logging.info('decoder of process {} with pid {} has been loaded ...'.format(myid, os.getpid()))
+    ###################################################
+    results = OrderedDict()
+    t1 = time.time()
+    for i, audio_file in enumerate(audio_list):
+        if log:
+            logging.info('decode {}'.format(audio_file))
+        result = decode_audio(audio_file, my_decoder, log)
+        results.update(result)
+    ##########################################
+    t2 = time.time()
+    ##########################################
+    print_results(myid, results, in_dir, log)
+    ##########################################
+    print('total time in process {}: {:.2f} minutes'.format(myid, ((t2 - t1) / 60)))
+    ##########################################
+    gc.collect()
