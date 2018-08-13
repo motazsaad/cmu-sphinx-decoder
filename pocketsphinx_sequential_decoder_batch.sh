@@ -34,7 +34,7 @@ pocketsphinx_batch \
  -hyp ${wav_dir}_batch.hyp \
  -logfn ${log}
 
-
+echo "done"
 decode_duration=$SECONDS
 echo "total decode time: $(($decode_duration / 60)) minutes and $(($decode_duration % 60)) seconds."
 
@@ -48,6 +48,8 @@ do
     filename=$(basename "$file")
     #printf "duration: %s sample rate: %s channels: %d file:%s\n" "$duration" "$s_rate" "$channels" "$filename"
 done
+
+
 printf "total wav duration in minutes: %.2f minutes\n" $(python -c "print($total_duration/60)")
 printf "total wav duration in hours: %.2f minutes\n" $(python -c "print($total_duration/60/60)")
 
