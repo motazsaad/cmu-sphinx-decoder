@@ -142,6 +142,6 @@ def decode_speech(myid, audio_list, config, in_dir, log):
     ##########################################
     print_results(myid, results, in_dir, log)
     ##########################################
-    print('total time in process {}: {:.2f} minutes'.format(myid, ((t2 - t1) / 60)))
+    print('total time in process {} with pid {}: {:.2f} minutes'.format(myid, os.getgid() , ((t2 - t1) / 60)))
     ##########################################
     gc.collect()

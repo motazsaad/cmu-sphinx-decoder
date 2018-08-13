@@ -70,5 +70,5 @@ if __name__ == '__main__':
     for p in processes:
         p.join()
     end = time.time()
-    print('total time: {:.2f} minutes'.format(((end - start) / 60)))
+    print('TOTAL TIME: {:.2f} minutes'.format(((end - start) / 60)))
     logging.info("done")
