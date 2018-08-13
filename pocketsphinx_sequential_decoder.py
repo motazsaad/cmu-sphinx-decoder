@@ -12,6 +12,7 @@ pip install --upgrade pocketsphinx
 
 
 import argparse
+import configparser
 import glob
 import logging
 import os
@@ -35,6 +36,24 @@ if __name__ == '__main__':
     in_dir = args.indir
     conf_file = args.conf
     log = args.log
+    ###########################################
+    config = configparser.ConfigParser()
+    if not os.path.exists(conf_file):
+        print('ERROR: {} doest not exisit'.format(conf_file))
+        sys.exit(-1)
+    config.read(conf_file)
+    if log:
+        logging.info('config file: {}'.format(conf_file))
+    model_name = config.sections()[0]
+    hmm = config[model_name]['hmm']
+    dict = config[model_name]['dict']
+    lm = config[model_name]['lm']
+    logfn = config[model_name]['log']
+    print('hmm: {}'.format(hmm))
+    print('dict: {}'.format(dict))
+    print('lm: {}'.format(lm))
+    print('logfn: {}'.format(logfn))
+    ###########################################
     audio_files = sorted(glob.glob(os.path.join(in_dir, '*.*')))
     num_files = len(audio_files)
     if num_files == 0:
@@ -43,5 +62,5 @@ if __name__ == '__main__':
     print('# of audio files: {}'.format(num_files))
     ###################################################
     ###################################################
-    decoderUtils.decode_speech("seq", audio_files, conf_file, in_dir, log)
+    decoderUtils.decode_speech("seq", audio_files, config, in_dir, log)
 
