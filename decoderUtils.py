@@ -58,7 +58,7 @@ def chunks(l, n):
 def decode_audio(audio_file, decoder, log):
     decode_result = {}
     if log:
-        logging.info('decode_audio(file:{}}'.format(audio_file))
+        logging.info('decode_audio(file:{})'.format(audio_file))
     audio_segment = AudioSegment.from_file(audio_file)
     duration = audio_segment.duration_seconds
     if not audio_file.endswith('.wav'):
