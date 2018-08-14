@@ -111,8 +111,6 @@ def print_results(myid, results, indir, log):
     with open(outfile, mode='w') as result_writer:
         logging.info('writing results to {}'.format(outfile))
         for filename, transcription in results.items():
-            if log:
-                logging.info('{} {}'.format(filename))
             fileid, ext = os.path.splitext(os.path.basename(filename))
             fileid = ' (' + fileid + ')\n'
             result_writer.write(transcription + fileid)
