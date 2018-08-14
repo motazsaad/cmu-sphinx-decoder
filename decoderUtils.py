@@ -4,8 +4,8 @@ import os
 import time
 from collections import OrderedDict
 
+import ffmpy
 from pocketsphinx import DefaultConfig, Decoder
-from pydub import AudioSegment
 
 logging.basicConfig(format='%(levelname)s: %(asctime)s %(message)s', level=logging.INFO)
 
@@ -59,28 +59,27 @@ def decode_audio(audio_file, decoder, log):
     decode_result = {}
     if log:
         logging.info('decode_audio(file:{})'.format(audio_file))
-    audio_segment = AudioSegment.from_file(audio_file)
-    duration = audio_segment.duration_seconds
     if not audio_file.endswith('.wav'):
         conversion_start_time = time.time()
         if log:
             logging.info('converting {} to wav'.format(audio_file))
-        audio_segment = audio_segment.set_frame_rate(16000)
-        audio_segment = audio_segment.set_channels(1)
         tmp_file_name = '/tmp/' + os.path.basename(audio_file) + '.wav'
-        audio_segment.export(tmp_file_name, format="wav")
+        ff = ffmpy.FFmpeg(inputs={audio_file}, outputs={tmp_file_name, '-ac 1 -ar 16000'})
         if log:
-            logging.info('wav file exported to {}'.format(tmp_file_name))
+            logging.info('wav file converted to {}'.format(tmp_file_name))
         conversion_time = time.time() - conversion_start_time
         decode_time_start_time = time.time()
         text = decode_wav_stream(tmp_file_name, decoder)
         decode_time = time.time() - decode_time_start_time
+        os.remove(tmp_file_name)
+        if log:
+            logging.info('delete {}'.format(tmp_file_name))
     else:
         decode_time_start_time = time.time()
         text = decode_wav_stream(audio_file, decoder)
         decode_time = time.time() - decode_time_start_time
         conversion_time = 0
-    decode_result[audio_file] = (duration, decode_time, conversion_time, text)
+    decode_result[audio_file] = text
     return decode_result
 
 
@@ -104,25 +103,15 @@ def decode_wav_stream(wav_file, my_decoder):
 
 
 def print_results(myid, results, indir, log):
-    total_duration = 0
-    total_decode_time = 0
-    total_conversion_time = 0
     outfile = "{}_{}_py.hyp".format(os.path.normpath(indir), str(myid))
     with open(outfile, mode='w') as result_writer:
         logging.info('writing results to {}'.format(outfile))
-        for filename, v in results.items():
+        for filename, transcription in results.items():
             if log:
-                logging.info('{} {}'.format(filename, v))
-            file_duration, file_decode_time, file_conversion_time, transcription = v
-            total_duration += file_duration
-            total_decode_time += file_decode_time
-            total_conversion_time += file_conversion_time
+                logging.info('{} {}'.format(filename))
             fileid, ext = os.path.splitext(os.path.basename(filename))
             fileid = ' (' + fileid + ')\n'
             result_writer.write(transcription + fileid)
-    print('ps: {}, pid: {}. Total audio duration: {:.2f} minutes'.format(myid, os.getgid(), (total_duration / 60)))
-    print('ps: {}, pid: {}. Total decode time: {:.2f} minutes'.format(myid, os.getgid(), (total_decode_time / 60)))
-    print('ps: {}, pid: {}. Total conversion time: {:.2f} minutes'.format(myid, os.getgid(), (total_conversion_time / 60)))
 
 
 def decode_speech(myid, audio_list, config, in_dir, log):
