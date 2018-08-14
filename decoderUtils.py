@@ -64,9 +64,13 @@ def decode_audio(audio_file, decoder, log):
         if log:
             logging.info('converting {} to wav'.format(audio_file))
         tmp_file_name = '/tmp/' + os.path.basename(audio_file) + '.wav'
-        ff = ffmpy.FFmpeg(inputs={audio_file}, outputs={tmp_file_name, '-ac 1 -ar 16000'})
+        if os.path.exists(tmp_file_name):
+            os.remove(tmp_file_name)
+        ff = ffmpy.FFmpeg(inputs={audio_file: None}, outputs={tmp_file_name: '-ac 1 -ar 16000 -loglevel quiet '})
         if log:
+            logging.info('conversion cmd: {}'.format(ff.cmd))
             logging.info('wav file converted to {}'.format(tmp_file_name))
+        ff.run()
         conversion_time = time.time() - conversion_start_time
         decode_time_start_time = time.time()
         text = decode_wav_stream(tmp_file_name, decoder)
@@ -133,6 +137,6 @@ def decode_speech(myid, audio_list, config, in_dir, log):
     ##########################################
     print_results(myid, results, in_dir, log)
     ##########################################
-    print('total time in process {} with pid {}: {:.2f} minutes'.format(myid, os.getgid() , ((t2 - t1) / 60)))
+    print('total time in process {} with pid {}: {:.2f} minutes'.format(myid, os.getgid(), ((t2 - t1) / 60)))
     ##########################################
     gc.collect()
