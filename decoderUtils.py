@@ -114,8 +114,8 @@ def decode_wav_stream(wav_file, my_decoder):
     return text
 
 
-def print_results(myid, results, indir, log):
-    outfile = "{}_{}_py.hyp".format(os.path.normpath(indir), str(myid))
+def print_results(myid, results, outfile_prefix, log):
+    outfile = "{}_{}.hyp".format(os.path.normpath(outfile_prefix), str(myid))
     with open(outfile, mode='w') as result_writer:
         logging.info('writing results to {}'.format(outfile))
         for filename, transcription in results.items():
@@ -124,7 +124,7 @@ def print_results(myid, results, indir, log):
             result_writer.write(transcription + fileid)
 
 
-def decode_speech(myid, audio_list, config, in_dir, log):
+def decode_speech(myid, audio_list, config, in_dir, outfile_prefix, log):
     logging.info('decoder of process {} with pid {} has been started ...'.format(myid, os.getpid()))
     if log:
         logging.info('input directory: {}'.format(in_dir))
@@ -141,7 +141,7 @@ def decode_speech(myid, audio_list, config, in_dir, log):
     ##########################################
     t2 = time.time()
     ##########################################
-    print_results(myid, results, in_dir, log)
+    print_results(myid, results, outfile_prefix, log)
     ##########################################
     print('total time in process {} with pid {}: {:.2f} minutes'.format(myid, os.getgid(), ((t2 - t1) / 60)))
     ##########################################

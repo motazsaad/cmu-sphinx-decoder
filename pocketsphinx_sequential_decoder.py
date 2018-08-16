@@ -22,12 +22,13 @@ import decoderUtils
 
 logging.basicConfig(format='%(levelname)s: %(asctime)s %(message)s', level=logging.INFO)
 
-parser = argparse.ArgumentParser(description='This decoder is based CMU Sphinx (works offline) engine provided by '
-                                             'speech_recognition python package.')  # type: ArgumentParser
-parser.add_argument('-i', '--indir', type=str,
-                    help='input wave directory', required=True)
+parser = argparse.ArgumentParser(description='This decoder is based CMU Sphinx (works offline) engine '
+                                             'provided by speech_recognition python package.')  # type: ArgumentParser
+parser.add_argument('-i', '--indir', type=str, help='input wave directory', required=True)
 parser.add_argument('-c', '--conf', type=str, help='configuration file', required=True)
 parser.add_argument('-l', '--log', action='store_true')
+parser.add_argument('-o', '--out', type=str, help='output file name prefix', required=True)
+
 
 if __name__ == '__main__':
     cpu_count = os.cpu_count()
@@ -36,6 +37,7 @@ if __name__ == '__main__':
     in_dir = args.indir
     conf_file = args.conf
     log = args.log
+    outfile_prefix = args.out
     ###########################################
     config = configparser.ConfigParser()
     if not os.path.exists(conf_file):
@@ -62,5 +64,5 @@ if __name__ == '__main__':
     print('# of audio files: {}'.format(num_files))
     ###################################################
     ###################################################
-    decoderUtils.decode_speech("seq", audio_files, config, in_dir, log)
+    decoderUtils.decode_speech("seq", audio_files, config, in_dir, outfile_prefix, log)
 
