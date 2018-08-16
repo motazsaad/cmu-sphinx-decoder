@@ -21,6 +21,12 @@ The input audio directory. Accepted formats: any format that ffmpeg supports. If
 #### -c/--conf 
 This argument is for the configuration file (ini). You can specify the path for HMM and LM models as well as the dictionary.   
 
+#### -o/--out 
+specify the output file name prefix. A suffix with process id/part id will be added to the file name. 
+
+#### -j JOBS 
+specify the number of jobs (parallel decoders) if j > number of CPUs/Cores then a error message with appear. j should be <= number of CPUs/Cores. This argument provides the user with flexibility to control the load on the machine  
+
 ### example command 
 ```
 python cmu-sphinx-decoder/pocketsphinx_parallel_decoder.py -c cmu-sphinx-decoder/conf/config_ar.ini -i ts_recordings/wav/2713_20180814 -l -o ts_recordings/wav/jsc_test_20180714 -j 9
