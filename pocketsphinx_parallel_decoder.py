@@ -24,6 +24,7 @@ parser = argparse.ArgumentParser(description='This decoder is based CMU Sphinx (
 parser.add_argument('-i', '--indir', type=str, help='input wave directory', required=True)
 parser.add_argument('-c', '--conf', type=str, help='configuration file', required=True)
 parser.add_argument('-l', '--log', action='store_true')
+parser.add_argument('-j', '--jobs', type=int, help='number of parallel jobs. Default= # of CPUs')
 
 if __name__ == '__main__':
     cpu_count = os.cpu_count()
@@ -32,6 +33,13 @@ if __name__ == '__main__':
     in_dir = args.indir
     conf_file = args.conf
     log = args.log
+    if args.jobs:
+        jobs = args.jobs
+        if jobs > cpu_count:
+            print('ERROR: # of jobs must be < {}'.format(cpu_count))
+            sys.exit(-1)
+    else:
+        jobs = cpu_count
     ###########################################
     config = configparser.ConfigParser()
     if not os.path.exists(conf_file):
@@ -57,7 +65,7 @@ if __name__ == '__main__':
         sys.exit(-1)
     print('# of audio files: {}'.format(num_files))
     ###################################################
-    audio_file_lists = decoderUtils.split_n_lists(audio_files, cpu_count)
+    audio_file_lists = decoderUtils.split_n_lists(audio_files, jobs)
     print('number of parts: {}'.format(len(audio_file_lists)))
     logging.info("start the process")
     start = time.time()
