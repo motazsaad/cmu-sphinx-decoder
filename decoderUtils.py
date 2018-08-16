@@ -131,17 +131,21 @@ def decode_speech(myid, audio_list, config, in_dir, outfile_prefix, log):
     my_decoder = load_decoder(config)
     logging.info('decoder of process {} with pid {} has been loaded ...'.format(myid, os.getpid()))
     ###################################################
-    results = OrderedDict()
+    outfile = "{}_{}.hyp".format(os.path.normpath(outfile_prefix), str(myid))
+    file_writer =  open(outfile, mode='w')
     t1 = time.time()
     for i, audio_file in enumerate(audio_list):
         if log:
             logging.info('decode {}'.format(audio_file))
         result = decode_audio(audio_file, my_decoder, log)
-        results.update(result)
+        fileid, ext = os.path.splitext(os.path.basename(audio_file))
+        fileid = ' (' + fileid + ')\n'
+        file_writer.write(result[audio_file] + fileid)
+
     ##########################################
     t2 = time.time()
     ##########################################
-    print_results(myid, results, outfile_prefix, log)
+    file_writer.close()
     ##########################################
     print('total time in process {} with pid {}: {:.2f} minutes'.format(myid, os.getgid(), ((t2 - t1) / 60)))
     ##########################################
