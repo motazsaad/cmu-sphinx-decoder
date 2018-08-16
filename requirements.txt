@@ -1,2 +1,3 @@
+ffmpy
 pocketsphinx
 pydub
