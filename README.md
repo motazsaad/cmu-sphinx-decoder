@@ -24,10 +24,13 @@ This argument is for the configuration file (ini). You can specify the path for 
 #### -o/--out 
 specify the output file name prefix. A suffix with process id/part id will be added to the file name. 
 
-#### -j JOBS 
-specify the number of jobs (parallel decoders) if j > number of CPUs/Cores then a error message with appear. j should be <= number of CPUs/Cores. This argument provides the user with flexibility to control the load on the machine  
+#### -j/--jobs  
+specify the number of jobs (parallel decoders) if j > number of CPUs/Cores then a error message with appear. j should be <= number of CPUs/Cores. This argument provides the user with flexibility to control the load on the machine. 
+
+#### -l/--log 
+enable logging (for debugging purposes)
 
 ### example command 
 ```
-python cmu-sphinx-decoder/pocketsphinx_parallel_decoder.py -c cmu-sphinx-decoder/conf/config_ar.ini -i ts_recordings/wav/2713_20180814 -l -o ts_recordings/wav/jsc_test_20180714 -j 9
+python cmu-sphinx-decoder/pocketsphinx_parallel_decoder.py -c cmu-sphinx-decoder/conf/config_ar.ini -i /storage/recordings/2713/2018/08/15  -o ts_recordings/jsc_test_20180715 -j 8 -l 
 ```
