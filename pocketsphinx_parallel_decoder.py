@@ -65,7 +65,7 @@ if __name__ == '__main__':
         sys.exit(-1)
     print('# of audio files: {}'.format(num_files))
     ###################################################
-    audio_file_lists = decoderUtils.split_n_lists(audio_files, jobs)
+    audio_file_lists = decoderUtils.split_n_lists_uniform(audio_files, jobs)
     print('number of parts: {}'.format(len(audio_file_lists)))
     logging.info("start the process")
     start = time.time()

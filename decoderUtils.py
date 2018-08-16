@@ -49,6 +49,14 @@ def split_n_lists(data, cpus_number):
         return parts
 
 
+def split_n_lists_uniform(data, number):
+    if len(data) <= number:
+        return [data]
+    m = float(len(data)) / number
+    parts = [data[int(m*i):int(m*(i+1))] for i in range(number)]
+    return parts
+
+
 def chunks(l, n):
     """Yield successive n-sized chunks from l."""
     for j in range(0, len(l), n):
