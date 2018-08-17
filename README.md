@@ -32,5 +32,6 @@ enable logging (for debugging purposes)
 
 ### example command 
 ```
+python cmu-sphinx-decoder/pocketsphinx_parallel_decoder.py -c cmu-sphinx-decoder/conf/config_ar.ini -i /storage/recordings/2713/2018/08/16  -o decoder_out/2713_20180816 -j 8 -l 
 python cmu-sphinx-decoder/pocketsphinx_parallel_decoder.py -c cmu-sphinx-decoder/conf/config_ar.ini -i /storage/recordings/2713/2018/08/15  -o ts_recordings/jsc_test_20180715 -j 8 -l 
 ```
