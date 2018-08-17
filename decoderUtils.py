@@ -23,10 +23,10 @@ def load_decoder(model_config):
         print('ERROR: {} doest not exisit'.format(hmm))
         sys.exit(-1)
     if not os.path.exists(lm):
-        print('ERROR: {} doest not exisit'.format(hmm))
+        print('ERROR: {} doest not exisit'.format(lm))
         sys.exit(-1)
     if not os.path.exists(dict):
-        print('ERROR: {} doest not exisit'.format(hmm))
+        print('ERROR: {} doest not exisit'.format(dict))
         sys.exit(-1)
     pocketsphinx_config.set_string('-hmm', hmm)
     pocketsphinx_config.set_string('-lm', lm)
