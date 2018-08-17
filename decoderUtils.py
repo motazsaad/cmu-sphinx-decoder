@@ -1,6 +1,7 @@
 import gc
 import logging
 import os
+import sys
 import time
 from collections import OrderedDict
 
@@ -18,6 +19,15 @@ def load_decoder(model_config):
     dict = model_config[model_name]['dict']
     lm = model_config[model_name]['lm']
     logfn = model_config[model_name]['log']
+    if not os.path.exists(hmm):
+        print('ERROR: {} doest not exisit'.format(hmm))
+        sys.exit(-1)
+    if not os.path.exists(lm):
+        print('ERROR: {} doest not exisit'.format(hmm))
+        sys.exit(-1)
+    if not os.path.exists(dict):
+        print('ERROR: {} doest not exisit'.format(hmm))
+        sys.exit(-1)
     pocketsphinx_config.set_string('-hmm', hmm)
     pocketsphinx_config.set_string('-lm', lm)
     pocketsphinx_config.set_string('-dict', dict)
