@@ -56,19 +56,3 @@ printf "total wav duration in hours: %.2f minutes\n" $(python -c "print($total_d
 decode_duration=$SECONDS
 echo "total decode time: $(($decode_duration / 60)) minutes and $(($decode_duration % 60)) seconds."
 
-
-#pocketsphinx_continuous -infile ${1} \
-#-hmm ${model} \
-#-dict ${dict} \
-#-lm ${lm} \
-##-beam 1e-50 \
-##-ds 2 \
-##-topn 3
-##-maxwpf 5
-##-maxhmmpf 3000
-#-backtrace yes \
-#-logfn ${log_file} > ${text_out}
-
-
-# bash pocketsphinx_sequential_decoder_bash.sh conf/config_ar.cfg ~/wav_files_less_than_1m/ out.txt
-
