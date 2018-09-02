@@ -79,7 +79,7 @@ if __name__ == '__main__':
     for i, audio_list in enumerate(audio_file_lists):
         print('part {} has {} audio segments'.format(i, len(audio_list)))
         proc = Process(target=decoderUtils.decode_speech,
-                       args=(i, audio_list, config, in_dir, outfile_prefix, log,))
+                       args=(i, audio_list, config, in_dir, outfile_prefix, log, sample_rate))
         processes.append(proc)
         proc.start()
     for p in processes:
