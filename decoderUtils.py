@@ -73,7 +73,7 @@ def chunks(l, n):
         yield l[j:j + n]
 
 
-def decode_audio(audio_file, decoder, log):
+def decode_audio(audio_file, decoder, log, sample_rate):
     decode_result = {}
     if log:
         logging.info('decode_audio(file:{})'.format(audio_file))
@@ -84,7 +84,7 @@ def decode_audio(audio_file, decoder, log):
         tmp_file_name = '/tmp/' + os.path.basename(audio_file) + '.wav'
         if os.path.exists(tmp_file_name):
             os.remove(tmp_file_name)
-        ff = ffmpy.FFmpeg(inputs={audio_file: None}, outputs={tmp_file_name: '-ac 1 -ar 16000 -loglevel quiet '})
+        ff = ffmpy.FFmpeg(inputs={audio_file: None}, outputs={tmp_file_name: '-ac 1 -ar {} -loglevel quiet '.format(sample_rate)})
         if log:
             logging.info('conversion cmd: {}'.format(ff.cmd))
             logging.info('wav file converted to {}'.format(tmp_file_name))
@@ -134,7 +134,7 @@ def print_results(myid, results, outfile_prefix, log):
             result_writer.write(transcription + fileid)
 
 
-def decode_speech(myid, audio_list, config, in_dir, outfile_prefix, log):
+def decode_speech(myid, audio_list, config, in_dir, outfile_prefix, log, sample_rate):
     logging.info('decoder of process {} with pid {} has been started ...'.format(myid, os.getpid()))
     if log:
         logging.info('input directory: {}'.format(in_dir))
@@ -147,7 +147,7 @@ def decode_speech(myid, audio_list, config, in_dir, outfile_prefix, log):
     for i, audio_file in enumerate(audio_list):
         if log:
             logging.info('decode {}'.format(audio_file))
-        result = decode_audio(audio_file, my_decoder, log)
+        result = decode_audio(audio_file, my_decoder, log, sample_rate)
         fileid, ext = os.path.splitext(os.path.basename(audio_file))
         fileid = ' (' + fileid + ')\n'
         file_writer.write(result[audio_file] + fileid)

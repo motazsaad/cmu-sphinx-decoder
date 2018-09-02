@@ -28,16 +28,19 @@ parser.add_argument('-i', '--indir', type=str, help='input wave directory', requ
 parser.add_argument('-c', '--conf', type=str, help='configuration file', required=True)
 parser.add_argument('-l', '--log', action='store_true')
 parser.add_argument('-o', '--out', type=str, help='output file name prefix', required=True)
-
+parser.add_argument('-s', '--srate', type=str, help='sample rate for the converted wav', default='16000')
 
 if __name__ == '__main__':
     cpu_count = os.cpu_count()
     print('number of CPUs: {}'.format(cpu_count))
+    ###########################################
+    # parse args
     args = parser.parse_args()
     in_dir = args.indir
     conf_file = args.conf
     log = args.log
     outfile_prefix = args.out
+    sample_rate = args.srate
     ###########################################
     config = configparser.ConfigParser()
     if not os.path.exists(conf_file):
@@ -64,5 +67,5 @@ if __name__ == '__main__':
     print('# of audio files: {}'.format(num_files))
     ###################################################
     ###################################################
-    decoderUtils.decode_speech("seq", audio_files, config, in_dir, outfile_prefix, log)
+    decoderUtils.decode_speech("seq", audio_files, config, in_dir, outfile_prefix, log, sample_rate)
 
