@@ -22,7 +22,6 @@ wav_dir=${2}
 # a handy SECONDS builtin variable that tracks the number of seconds that have passed since the shell was started.
 SECONDS=0
 
-
 pocketsphinx_batch \
  -adcin yes \
  -cepdir ${wav_dir} \
@@ -31,8 +30,10 @@ pocketsphinx_batch \
  -lm ${lm} \
  -dict ${dict} \
  -hmm ${hmm} \
- -hyp ${wav_dir}_batch.hyp \
- -logfn ${log}
+ -hyp ${wav_dir}_batch.hyp
+# -logfn ${log}
+
+
 
 echo "done"
 decode_duration=$SECONDS
