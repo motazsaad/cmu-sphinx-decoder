@@ -20,7 +20,7 @@ wav_dir=${2}
 
 printf "%s\n" "make fileids file (the control file)"
 ls -d ${wav_dir}/* | sed -n 's/\.wav//p' > file.fileids
-
+printf "%s\n" "making fileids file is done"
 
 # a handy SECONDS builtin variable that tracks the number of seconds that have passed since the shell was started.
 SECONDS=0
