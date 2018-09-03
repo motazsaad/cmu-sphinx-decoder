@@ -19,7 +19,7 @@ wav_dir=${2}
 
 
 # make fileids file (the control file)
-ls -d ${wav_dir}/* | sed -n 's/\.wav//p' > ${wav_dir}.fileids
+ls -d ${wav_dir}/* | sed -n 's/\.wav//p' > file.fileids
 
 
 # a handy SECONDS builtin variable that tracks the number of seconds that have passed since the shell was started.
