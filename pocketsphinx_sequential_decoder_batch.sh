@@ -15,29 +15,31 @@ printf "lm:%s\n" ${lm}
 printf "dict:%s\n" ${dict}
 
 
-wav_dir=${2}
+in_dir=${2}
 
+clt_file=$(echo ${in_dir} | sed "s/\/storage\/recordings\///" | sed "s/\//_/g")
+
+mkdir -p ${clt_file}
+for f in ${in_dir}/.ts; do file_name=$(basename ${f}); ffmpeg -i ${f} -ar 16000 -ac 1 ~/waves/${clt_file/${file_name}.wav; done
+printf "%s\n" "conversion to wave format is done"
 
 printf "%s\n" "make fileids file (the control file)"
-ls -d ${wav_dir}/* | sed -n 's/\.wav//p' > file.fileids
+ls -d ${clt_file}/* | sed -n 's/\.wav//p' > ${clt_file}.fileid
 printf "%s\n" "making fileids file is done"
 
 # a handy SECONDS builtin variable that tracks the number of seconds that have passed since the shell was started.
 SECONDS=0
 
-if [[ -n $(echo ${wav_dir}*.wav) ]]    # or [ -n "$(echo *.wav)" ]
-then
 pocketsphinx_batch \
  -adcin yes \
- -cepdir ${wav_dir} \
+ -cepdir ${in_dir} \
  -cepext .wav \
- -ctl ${wav_dir}.fileids \
+ -ctl ${clt_file}.fileid \
  -lm ${lm} \
  -dict ${dict} \
  -hmm ${hmm} \
- -hyp ${wav_dir}_batch.hyp
+ -hyp ${in_dir}_batch.hyp
 # -logfn ${log}
-fi
 
 
 echo "done"
@@ -45,7 +47,7 @@ decode_duration=$SECONDS
 echo "total decode time: $(($decode_duration / 60)) minutes and $(($decode_duration % 60)) seconds."
 
 total_duration=0.0
-for file in ${wav_dir}/*.wav
+for file in ${in_dir}/*.wav
 do
     duration=$(sox --i -D "$file")
     total_duration=$(python -c "print($total_duration+$duration)")
