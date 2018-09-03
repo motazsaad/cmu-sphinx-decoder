@@ -20,7 +20,7 @@ in_dir=${2}
 clt_file=$(echo ${in_dir} | sed "s/\/storage\/recordings\///" | sed "s/\//_/g")
 
 mkdir -p ${clt_file}
-for f in ${in_dir}/.ts; do file_name=$(basename ${f}); ffmpeg -i ${f} -ar 16000 -ac 1 ~/waves/${clt_file/${file_name}.wav; done
+for f in ${in_dir}/.ts; do file_name=$(basename ${f}); ffmpeg -i ${f} -ar 16000 -ac 1 ~/waves/${clt_file}/${file_name}.wav; done
 printf "%s\n" "conversion to wave format is done"
 
 printf "%s\n" "make fileids file (the control file)"
