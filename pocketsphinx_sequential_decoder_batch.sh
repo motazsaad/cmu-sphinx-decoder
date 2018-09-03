@@ -18,7 +18,7 @@ printf "dict:%s\n" ${dict}
 wav_dir=${2}
 
 
-# make fileids file (the control file)
+printf "%s\n" "make fileids file (the control file)"
 ls -d ${wav_dir}/* | sed -n 's/\.wav//p' > file.fileids
 
 
