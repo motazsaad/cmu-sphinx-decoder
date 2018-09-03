@@ -18,10 +18,15 @@ printf "dict:%s\n" ${dict}
 wav_dir=${2}
 
 
+# make fileids file (the control file)
+ls -d ${wav_dir}/* | sed -n 's/\.wav//p' > ${wav_dir}.fileids
+
 
 # a handy SECONDS builtin variable that tracks the number of seconds that have passed since the shell was started.
 SECONDS=0
 
+if [[ -n $(echo ${wav_dir}*.wav) ]]    # or [ -n "$(echo *.wav)" ]
+then
 pocketsphinx_batch \
  -adcin yes \
  -cepdir ${wav_dir} \
@@ -32,7 +37,7 @@ pocketsphinx_batch \
  -hmm ${hmm} \
  -hyp ${wav_dir}_batch.hyp
 # -logfn ${log}
-
+fi
 
 
 echo "done"
