@@ -27,8 +27,9 @@ parser = argparse.ArgumentParser(description='This decoder is based CMU Sphinx (
 parser.add_argument('-i', '--indir', type=str, help='input wave directory', required=True)
 parser.add_argument('-c', '--conf', type=str, help='configuration file', required=True)
 parser.add_argument('-l', '--log', action='store_true')
-parser.add_argument('-o', '--out', type=str, help='output file name prefix', required=True)
+parser.add_argument('-o', '--outdir', type=str, help='output file name prefix', required=True)
 parser.add_argument('-s', '--srate', type=str, help='sample rate for the converted wav', default='16000')
+
 
 if __name__ == '__main__':
     cpu_count = os.cpu_count()
@@ -39,7 +40,9 @@ if __name__ == '__main__':
     in_dir = args.indir
     conf_file = args.conf
     log = args.log
-    outfile_prefix = args.out
+    outdir = args.outdir
+    out = os.path.join(os.path.normpath(outdir),
+                       in_dir.replace('/storage/recordings/', '').replace('/', '_'))
     sample_rate = args.srate
     ###########################################
     config = configparser.ConfigParser()
@@ -53,7 +56,8 @@ if __name__ == '__main__':
     hmm = config[model_name]['hmm']
     dict = config[model_name]['dict']
     lm = config[model_name]['lm']
-    logfn = config[model_name]['log']
+    # logfn = config[model_name]['log']
+    logfn = out + '.log'
     print('hmm: {}'.format(hmm))
     print('dict: {}'.format(dict))
     print('lm: {}'.format(lm))
@@ -67,5 +71,5 @@ if __name__ == '__main__':
     print('# of audio files: {}'.format(num_files))
     ###################################################
     ###################################################
-    decoderUtils.decode_speech("seq", audio_files, config, in_dir, outfile_prefix, log, sample_rate)
+    decoderUtils.decode_speech("seq", audio_files, config, in_dir, out, log, sample_rate)
 

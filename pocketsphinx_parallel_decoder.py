@@ -25,7 +25,7 @@ parser.add_argument('-i', '--indir', type=str, help='input wave directory', requ
 parser.add_argument('-c', '--conf', type=str, help='configuration file', required=True)
 parser.add_argument('-l', '--log', action='store_true')
 parser.add_argument('-j', '--jobs', type=int, help='number of parallel jobs. Default= # of CPUs')
-parser.add_argument('-o', '--out', type=str, help='output file name prefix', required=True)
+parser.add_argument('-o', '--outdir', type=str, help='output file name prefix', required=True)
 parser.add_argument('-s', '--srate', type=str, help='sample rate for the converted wav', default='16000')
 
 if __name__ == '__main__':
@@ -37,7 +37,9 @@ if __name__ == '__main__':
     in_dir = args.indir
     conf_file = args.conf
     log = args.log
-    outfile_prefix = args.out
+    outdir = args.outdir
+    out = os.path.join(os.path.normpath(outdir),
+                       in_dir.replace('/storage/recordings/', '').replace('/', '_'))
     sample_rate = args.srate
     if args.jobs:
         jobs = args.jobs
@@ -79,7 +81,7 @@ if __name__ == '__main__':
     for i, audio_list in enumerate(audio_file_lists):
         print('part {} has {} audio segments'.format(i, len(audio_list)))
         proc = Process(target=decoderUtils.decode_speech,
-                       args=(i, audio_list, config, in_dir, outfile_prefix, log, sample_rate))
+                       args=(i, audio_list, config, in_dir, out, log, sample_rate))
         processes.append(proc)
         proc.start()
     for p in processes:
