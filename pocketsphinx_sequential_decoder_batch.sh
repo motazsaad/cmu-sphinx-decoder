@@ -18,9 +18,11 @@ printf "dict:%s\n" ${dict}
 in_dir=${2}
 
 wav_dir=$(echo ${in_dir} | sed "s/\/storage\/recordings\///" | sed "s/\//_/g")
+printf "in_dir: %s\n" ${in_dir}
+printf "wav_dir: %s\n" ${wav_dir}
 
 read -p "Convert to wav? " -n 1 -r
-
+echo    # (optional) move to a new line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
 ##################################################
