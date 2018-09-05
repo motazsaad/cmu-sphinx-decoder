@@ -17,14 +17,21 @@ printf "dict:%s\n" ${dict}
 
 in_dir=${2}
 
-clt_file=$(echo ${in_dir} | sed "s/\/storage\/recordings\///" | sed "s/\//_/g")
+wav_dir=$(echo ${in_dir} | sed "s/\/storage\/recordings\///" | sed "s/\//_/g")
 
-mkdir -p ${clt_file}
-for f in ${in_dir}/.ts; do file_name=$(basename ${f}); ffmpeg -i ${f} -ar 16000 -ac 1 ~/waves/${clt_file}/${file_name}.wav; done
+read -p "Convert to wav? " -n 1 -r
+
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+##################################################
+mkdir -p ${wav_dir}
+for f in ${in_dir}/.ts; do file_name=$(basename ${f}); ffmpeg -i ${f} -ar 16000 -ac 1 ~/waves/${wav_dir}/${file_name}.wav; done
 printf "%s\n" "conversion to wave format is done"
+##################################################
+fi
 
 printf "%s\n" "make fileids file (the control file)"
-ls -d ${clt_file}/* | sed -n 's/\.wav//p' > ${clt_file}.fileid
+ls -d ${wav_dir}/* | sed -n 's/\.wav//p' > ${wav_dir}.fileid
 printf "%s\n" "making fileids file is done"
 
 # a handy SECONDS builtin variable that tracks the number of seconds that have passed since the shell was started.
@@ -32,9 +39,9 @@ SECONDS=0
 
 pocketsphinx_batch \
  -adcin yes \
- -cepdir ${in_dir} \
+ -cepdir ${wav_dir} \
  -cepext .wav \
- -ctl ${clt_file}.fileid \
+ -ctl ${wav_dir}.fileid \
  -lm ${lm} \
  -dict ${dict} \
  -hmm ${hmm} \
