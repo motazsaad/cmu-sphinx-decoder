@@ -18,6 +18,7 @@ printf "dict:%s\n" ${dict}
 in_dir=${2}
 
 wav_dir=$(echo ${in_dir} | sed "s/\/storage\/recordings\///" | sed "s/\//_/g")
+wav_dir=~/waves/${wav_dir}
 printf "in_dir: %s\n" ${in_dir}
 printf "wav_dir: %s\n" ${wav_dir}
 
@@ -27,13 +28,13 @@ if [[ $REPLY =~ ^[Yy]$ ]]
 then
 ##################################################
 mkdir -p ${wav_dir}
-for f in ${in_dir}/.ts; do file_name=$(basename ${f}); ffmpeg -i ${f} -ar 16000 -ac 1 ~/waves/${wav_dir}/${file_name}.wav; done
+for f in ${in_dir}/.ts; do file_name=$(basename ${f}); ffmpeg -i ${f} -ar 16000 -ac 1 ${wav_dir}/${file_name}.wav; done
 printf "%s\n" "conversion to wave format is done"
 ##################################################
 fi
 
 printf "%s\n" "make fileids file (the control file)"
-ls -d ${wav_dir}/* | sed -n 's/\.wav//p' > ${wav_dir}.fileid
+ls -d ${wav_dir}/* | sed -n 's/\.wav//p' > ${wav_dir}/clt.fileid
 printf "%s\n" "making fileids file is done"
 
 # a handy SECONDS builtin variable that tracks the number of seconds that have passed since the shell was started.
@@ -43,7 +44,7 @@ pocketsphinx_batch \
  -adcin yes \
  -cepdir ${wav_dir} \
  -cepext .wav \
- -ctl ${wav_dir}.fileid \
+ -ctl ${wav_dir}/clt.fileid \
  -lm ${lm} \
  -dict ${dict} \
  -hmm ${hmm} \
