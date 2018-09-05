@@ -43,7 +43,7 @@ if __name__ == '__main__':
                        in_dir.replace('/storage/recordings/', '').replace('/', '_'))
     out = out + '_' + os.path.basename(conf_file)
     ts = time.time()
-    time_stamp = datetime.datetime.fromtimestamp(ts).strftime('%Y%m%d_%H%M')
+    time_stamp = datetime.datetime.fromtimestamp(ts).strftime('%Y%m%d_%Hh%M')
     out = out + '_' + time_stamp
     sample_rate = args.srate
     if args.jobs:
