@@ -13,6 +13,7 @@ pip install --upgrade pocketsphinx
 
 import argparse
 import configparser
+import datetime
 import glob
 import logging
 import os
@@ -43,6 +44,9 @@ if __name__ == '__main__':
     outdir = args.outdir
     out = os.path.join(os.path.normpath(outdir),
                        in_dir.replace('/storage/recordings/', '').replace('/', '_'))
+    out = out + '_' + os.path.basename(conf_file)
+    time_stamp = datetime.datetime.fromtimestamp(ts).strftime('%Y%m%d_%H%M')
+    out = out + '_' + time_stamp
     sample_rate = args.srate
     ###########################################
     config = configparser.ConfigParser()
