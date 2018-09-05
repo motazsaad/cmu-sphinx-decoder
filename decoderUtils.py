@@ -11,7 +11,7 @@ from pocketsphinx import DefaultConfig, Decoder
 logging.basicConfig(format='%(levelname)s: %(asctime)s %(message)s', level=logging.INFO)
 
 
-def load_decoder(model_config, log):
+def load_decoder(model_config, out):
     # Create a decoder with certain model
     pocketsphinx_config = DefaultConfig()
     model_name = model_config.sections()[0]
@@ -19,7 +19,7 @@ def load_decoder(model_config, log):
     dict = model_config[model_name]['dict']
     lm = model_config[model_name]['lm']
     # logfn = model_config[model_name]['log']
-    logfn = log + '.log'
+    logfn = out + '.log'
     if not os.path.exists(hmm):
         print('ERROR: {} doest not exisit'.format(hmm))
         sys.exit(-1)
@@ -135,14 +135,14 @@ def print_results(myid, results, outfile_prefix, log):
             result_writer.write(transcription + fileid)
 
 
-def decode_speech(myid, audio_list, config, in_dir, outfile_prefix, log, sample_rate):
+def decode_speech(myid, audio_list, config, in_dir, out, log, sample_rate):
     logging.info('decoder of process {} with pid {} has been started ...'.format(myid, os.getpid()))
     if log:
         logging.info('input directory: {}'.format(in_dir))
-    my_decoder = load_decoder(config, log)
+    my_decoder = load_decoder(config, out)
     logging.info('decoder of process {} with pid {} has been loaded ...'.format(myid, os.getpid()))
     ###################################################
-    outfile = "{}_{}.hyp".format(os.path.normpath(outfile_prefix), str(myid))
+    outfile = "{}_{}.hyp".format(os.path.normpath(out), str(myid))
     file_writer = open(outfile, mode='w', buffering=1)
     t1 = time.time()
     for i, audio_file in enumerate(audio_list):
