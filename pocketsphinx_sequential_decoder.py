@@ -45,6 +45,7 @@ if __name__ == '__main__':
     out = os.path.join(os.path.normpath(outdir),
                        in_dir.replace('/storage/recordings/', '').replace('/', '_'))
     out = out + '_' + os.path.basename(conf_file)
+    ts = time.time()
     time_stamp = datetime.datetime.fromtimestamp(ts).strftime('%Y%m%d_%H%M')
     out = out + '_' + time_stamp
     sample_rate = args.srate
