@@ -22,7 +22,7 @@ The input audio directory. Accepted formats: any format that ffmpeg supports. If
 This argument is for the configuration file (ini). You can specify the path for HMM and LM models as well as the dictionary.   
 
 #### -o/--out 
-specify the output file name prefix. A suffix with process id/part id will be added to the file name. 
+specify the output output directory. A suffix with process id/part id will be added automatically to the file name. 
 
 #### -j/--jobs  
 specify the number of jobs (parallel decoders) if j > number of CPUs/Cores then a error message with appear. j should be <= number of CPUs/Cores. This argument provides the user with flexibility to control the load on the machine. 

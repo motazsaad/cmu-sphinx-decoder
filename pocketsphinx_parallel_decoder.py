@@ -26,7 +26,7 @@ parser.add_argument('-i', '--indir', type=str, help='input wave directory', requ
 parser.add_argument('-c', '--conf', type=str, help='configuration file', required=True)
 parser.add_argument('-l', '--log', action='store_true')
 parser.add_argument('-j', '--jobs', type=int, help='number of parallel jobs. Default= # of CPUs')
-parser.add_argument('-o', '--outdir', type=str, help='output file name prefix', required=True)
+parser.add_argument('-o', '--outdir', type=str, help='output output directory', required=True)
 parser.add_argument('-s', '--srate', type=str, help='sample rate for the converted wav', default='16000')
 
 if __name__ == '__main__':
