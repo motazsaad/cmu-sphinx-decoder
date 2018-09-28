@@ -149,7 +149,10 @@ def decode_speech(myid, audio_list, config, in_dir, out, log, sample_rate):
     file_writer = open(outfile, mode='w', buffering=1)
     t1 = time.time()
     # bar = Bar('Progress of process {}, pid {}'.format(myid, os.getpid()), max=len(audio_list))
-    pbar = tqdm(total=len(audio_list), desc='Progress of process {}, pid {}'.format(myid, os.getpid()))
+    if myid != 'seq':
+        pbar = tqdm(total=len(audio_list), desc='Progress of process {}, pid {}'.format(myid, os.getpid()), position=int(myid))
+    else: 
+        pbar = tqdm(total=len(audio_list), desc='Progress of process {}, pid {}'.format(myid, os.getpid()))
     for i, audio_file in enumerate(audio_list):
         if log:
             logging.info('decode {}'.format(audio_file))
