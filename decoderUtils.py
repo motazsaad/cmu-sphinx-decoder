@@ -148,8 +148,8 @@ def decode_speech(myid, audio_list, config, in_dir, out, log, sample_rate):
     outfile = "{}_{}.hyp".format(os.path.normpath(out), str(myid))
     file_writer = open(outfile, mode='w', buffering=1)
     t1 = time.time()
-    bar = Bar('Progress of process {}, pid {}'.format(myid, os.getpid()), max=len(audio_list))
-    # pbar = tqdm(total=len(audio_list), desc=)
+    # bar = Bar('Progress of process {}, pid {}'.format(myid, os.getpid()), max=len(audio_list))
+    pbar = tqdm(total=len(audio_list), desc='Progress of process {}, pid {}'.format(myid, os.getpid()))
     for i, audio_file in enumerate(audio_list):
         if log:
             logging.info('decode {}'.format(audio_file))
@@ -157,9 +157,11 @@ def decode_speech(myid, audio_list, config, in_dir, out, log, sample_rate):
         fileid, ext = os.path.splitext(os.path.basename(audio_file))
         fileid = ' (' + fileid + ')\n'
         file_writer.write(result[audio_file] + fileid)
-        bar.next()
+        # bar.next()
+        pbar.update()
         # file_writer.flush() # instead, we used buffering=1 
-    bar.finish()
+    # bar.finish()
+    pbar.close()
 
 
     ##########################################
