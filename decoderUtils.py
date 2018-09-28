@@ -4,6 +4,8 @@ import os
 import sys
 import time
 from collections import OrderedDict
+from progress.bar import Bar
+
 
 import ffmpy
 from pocketsphinx import DefaultConfig, Decoder
@@ -22,13 +24,13 @@ def load_decoder(model_config, out):
     logfn = out + '.log'
     if not os.path.exists(hmm):
         print('ERROR: {} doest not exisit'.format(hmm))
-        sys.exit(-1)
+        sys.exit(-2)
     if not os.path.exists(lm):
         print('ERROR: {} doest not exisit'.format(lm))
-        sys.exit(-1)
+        sys.exit(-4)
     if not os.path.exists(dict):
         print('ERROR: {} doest not exisit'.format(dict))
-        sys.exit(-1)
+        sys.exit(-5)
     pocketsphinx_config.set_string('-hmm', hmm)
     pocketsphinx_config.set_string('-lm', lm)
     pocketsphinx_config.set_string('-dict', dict)
@@ -145,6 +147,7 @@ def decode_speech(myid, audio_list, config, in_dir, out, log, sample_rate):
     outfile = "{}_{}.hyp".format(os.path.normpath(out), str(myid))
     file_writer = open(outfile, mode='w', buffering=1)
     t1 = time.time()
+    bar = Bar('Progress of process {}, pid {}'.format(myid, os.getpid(), max=len(audio_list)))
     for i, audio_file in enumerate(audio_list):
         if log:
             logging.info('decode {}'.format(audio_file))
@@ -152,7 +155,10 @@ def decode_speech(myid, audio_list, config, in_dir, out, log, sample_rate):
         fileid, ext = os.path.splitext(os.path.basename(audio_file))
         fileid = ' (' + fileid + ')\n'
         file_writer.write(result[audio_file] + fileid)
-        # file_writer.flush()
+        bar.next()
+        # file_writer.flush() # instead, we used buffering=1 
+    bar.finish()
+
 
     ##########################################
     t2 = time.time()

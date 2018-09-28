@@ -35,3 +35,9 @@ enable logging (for debugging purposes)
 python cmu-sphinx-decoder/pocketsphinx_parallel_decoder.py -j 8 -c cmu-sphinx-decoder/conf/config_ar.ini -i /storage/recordings/2713/2018/08/16  -o decoder_out/2713_20180816
 nohup python cmu-sphinx-decoder/pocketsphinx_parallel_decoder.py -j 8 -c cmu-sphinx-decoder/conf/config_ar.ini -i /storage/recordings/2713/2018/08/16 -o decoder_out/2713_20180816 &    
 ```
+
+## Error codes:
+-1 : config file doest not exisit
+-2 : HMM file doesn not exisit
+-3 : language model file doesn not exisit
+-4 : dictionary file doesn not exisit
