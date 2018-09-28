@@ -65,7 +65,8 @@ if __name__ == '__main__':
     hmm = config[model_name]['hmm']
     dict = config[model_name]['dict']
     lm = config[model_name]['lm']
-    logfn = config[model_name]['log']
+    # logfn = config[model_name]['log']
+    logfn = out + '.log'
     print('hmm: {}'.format(hmm))
     print('dict: {}'.format(dict))
     print('lm: {}'.format(lm))
