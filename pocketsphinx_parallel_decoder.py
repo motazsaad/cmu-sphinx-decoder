@@ -66,11 +66,11 @@ if __name__ == '__main__':
     dict = config[model_name]['dict']
     lm = config[model_name]['lm']
     # logfn = config[model_name]['log']
-    logfn = out + '.log'
+    # logfn = out + '.log'
     print('hmm: {}'.format(hmm))
     print('dict: {}'.format(dict))
     print('lm: {}'.format(lm))
-    print('logfn: {}'.format(logfn))
+    # print('logfn: {}'.format(logfn))
     ###########################################
     audio_files = sorted(glob.glob(os.path.join(in_dir, '*.*')))
     num_files = len(audio_files)

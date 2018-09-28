@@ -5,6 +5,7 @@ import sys
 import time
 from collections import OrderedDict
 from progress.bar import Bar
+from tqdm import tqdm
 
 
 import ffmpy
@@ -147,7 +148,8 @@ def decode_speech(myid, audio_list, config, in_dir, out, log, sample_rate):
     outfile = "{}_{}.hyp".format(os.path.normpath(out), str(myid))
     file_writer = open(outfile, mode='w', buffering=1)
     t1 = time.time()
-    bar = Bar('Progress of process {}, pid {}'.format(myid, os.getpid(), max=len(audio_list)))
+    bar = Bar('Progress of process {}, pid {}'.format(myid, os.getpid()), max=len(audio_list))
+    # pbar = tqdm(total=len(audio_list), desc=)
     for i, audio_file in enumerate(audio_list):
         if log:
             logging.info('decode {}'.format(audio_file))
