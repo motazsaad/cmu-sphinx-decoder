@@ -38,6 +38,9 @@ nohup python cmu-sphinx-decoder/pocketsphinx_parallel_decoder.py -j 8 -c cmu-sph
 
 ## Error codes:
 -1 : config file doest not exisit
+
 -2 : HMM file doesn not exisit
+
 -3 : language model file doesn not exisit
+
 -4 : dictionary file doesn not exisit
