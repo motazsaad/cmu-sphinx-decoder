@@ -22,10 +22,10 @@ The input audio directory. Accepted formats: any format that ffmpeg supports. If
 This argument is for the configuration file (ini). You can specify the path for HMM and LM models as well as the dictionary.   
 
 #### -o/--out 
-specify the output output directory. A suffix with process id/part id will be added automatically to the file name. 
+specify the output directory. A suffix with process id/part id will be added automatically to the file name. 
 
 #### -j/--jobs  
-specify the number of jobs (parallel decoders) if j > number of CPUs/Cores then a error message with appear. j should be <= number of CPUs/Cores. This argument provides the user with flexibility to control the load on the machine. 
+specify the number of jobs (parallel decoders) if j > number of CPUs/Cores then an error message with appear. j should be <= number of CPUs/Cores. This argument provides the user with the flexibility to control the load on the machine. 
 
 #### -l/--log 
 enable logging (for debugging purposes)
@@ -38,10 +38,10 @@ python cmu-sphinx-decoder/pocketsphinx_sequential_decoder.py -c cmu-sphinx-decod
 ```
 
 ## Error codes:
--1 : config file doest not exisit
+-1 : config file doesn't exisit
 
--2 : HMM file doesn not exisit
+-2 : HMM file doesn't exisit
 
--3 : language model file doesn not exisit
+-3 : language model file doesn't exisit
 
--4 : dictionary file doesn not exisit
+-4 : dictionary file doesn't exisit
