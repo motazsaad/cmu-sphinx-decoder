@@ -38,10 +38,10 @@ python cmu-sphinx-decoder/pocketsphinx_sequential_decoder.py -c cmu-sphinx-decod
 ```
 
 ## Error codes:
--1 : config file doesn't exisit
+-1 : config file does't exist
 
--2 : HMM file doesn't exisit
+-2 : HMM file does't exist
 
--3 : language model file doesn't exisit
+-3 : language model file does't exist
 
--4 : dictionary file doesn't exisit
+-4 : dictionary file does't exist

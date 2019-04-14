@@ -30,8 +30,6 @@ parser.add_argument('-o', '--outdir', type=str, help='output output directory', 
 parser.add_argument('-s', '--srate', type=str, help='sample rate for the converted wav', default='16000')
 
 if __name__ == '__main__':
-    cpu_count = os.cpu_count()
-    print('number of CPUs: {}'.format(cpu_count))
     ###########################################
     # parse args
     args = parser.parse_args()
@@ -41,11 +39,17 @@ if __name__ == '__main__':
     outdir = args.outdir
     out = os.path.join(os.path.normpath(outdir),
                        in_dir.replace('/storage/recordings/', '').replace('/', '_'))
+    ##############################
+    outfile = './logs/' + out + '.log'
+    sys.stdout = open(outfile, mode='w', encoding='utf-8')
+    ##############################
     out = out + '_' + os.path.basename(conf_file)
     ts = time.time()
     time_stamp = datetime.datetime.fromtimestamp(ts).strftime('%Y%m%d_%Hh%M')
     out = out + '_' + time_stamp
     sample_rate = args.srate
+    cpu_count = os.cpu_count()
+    print('number of CPUs: {}'.format(cpu_count))
     if args.jobs:
         jobs = args.jobs
         if jobs > cpu_count:
@@ -70,6 +74,7 @@ if __name__ == '__main__':
     print('hmm: {}'.format(hmm))
     print('dict: {}'.format(dict))
     print('lm: {}'.format(lm))
+    print('audio directory: {}'.format(in_dir))
     # print('logfn: {}'.format(logfn))
     ###########################################
     audio_files = sorted(glob.glob(os.path.join(in_dir, '*.*')))
