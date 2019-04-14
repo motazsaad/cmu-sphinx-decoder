@@ -40,7 +40,7 @@ if __name__ == '__main__':
     out = os.path.join(os.path.normpath(outdir),
                        in_dir.replace('/storage/recordings/', '').replace('/', '_'))
     ##############################
-    outfile = './logs/' + out + '.log'
+    outfile = '/home/sphinxuser/logs/' + out + '.log'
     sys.stdout = open(outfile, mode='w', encoding='utf-8')
     ##############################
     out = out + '_' + os.path.basename(conf_file)
