@@ -42,7 +42,7 @@ if __name__ == '__main__':
     ##############################
     indir_date = in_dir.replace('/storage/recordings/', '').replace('/', '_')
     outfile = '/home/sphinxuser/logs/' + indir_date + '.log'
-    sys.stdout = open(outfile, mode='w', encoding='utf-8')
+    # sys.stdout = open(outfile, mode='w', encoding='utf-8')
     print('outfile', outfile)
     print('indir date:', indir_date)
     ##############################
