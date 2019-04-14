@@ -40,8 +40,11 @@ if __name__ == '__main__':
     out = os.path.join(os.path.normpath(outdir),
                        in_dir.replace('/storage/recordings/', '').replace('/', '_'))
     ##############################
-    outfile = '/home/sphinxuser/logs/' + out + '.log'
+    indir_date = in_dir.replace('/storage/recordings/', '').replace('/', '_')
+    outfile = '/home/sphinxuser/logs/' + indir_date + '.log'
     sys.stdout = open(outfile, mode='w', encoding='utf-8')
+    print('outfile', outfile)
+    print('indir date:', indir_date)
     ##############################
     out = out + '_' + os.path.basename(conf_file)
     ts = time.time()
