@@ -7,4 +7,4 @@ yesterday=$(date -d "yesterday" '+%Y/%m/%d')
 #echo ${yesterday}
 yesterday_log=$(date -d "yesterday" '+%Y_%m_%d')
 
-nohup python3 /home/sphinxuser/cmu-sphinx-decoder/pocketsphinx_parallel_decoder.py -j 8 -c /home/sphinxuser/cmu-sphinx-decoder/conf/config_ar.ini -i /storage/recordings/${channel}/${yesterday}  -o decoder_out/ > /home/sphinxuser/logs/${channel}_${yesterday_log}.log 2>&1
+python3 /home/sphinxuser/cmu-sphinx-decoder/pocketsphinx_parallel_decoder.py -j 8 -c /home/sphinxuser/cmu-sphinx-decoder/conf/config_ar.ini -i /storage/recordings/${channel}/${yesterday}  -o decoder_out/ &

@@ -1,15 +1,12 @@
-import gc
 import logging
 import os
 import sys
 import time
-from collections import OrderedDict
-from progress.bar import Bar
-from tqdm import tqdm
-
 
 import ffmpy
+import gc
 from pocketsphinx import DefaultConfig, Decoder
+from tqdm import tqdm
 
 logging.basicConfig(format='%(levelname)s: %(asctime)s %(message)s', level=logging.INFO)
 
@@ -24,13 +21,13 @@ def load_decoder(myid, model_config, out):
     # logfn = model_config[model_name]['log']
     logfn = '{}_{}.log'.format(out, myid)
     if not os.path.exists(hmm):
-        print('ERROR: {} doest not exisit'.format(hmm))
+        print('ERROR: {} does not exist'.format(hmm))
         sys.exit(-2)
     if not os.path.exists(lm):
-        print('ERROR: {} doest not exisit'.format(lm))
+        print('ERROR: {} does not exist'.format(lm))
         sys.exit(-4)
     if not os.path.exists(dict):
-        print('ERROR: {} doest not exisit'.format(dict))
+        print('ERROR: {} does not exist'.format(dict))
         sys.exit(-5)
     pocketsphinx_config.set_string('-hmm', hmm)
     pocketsphinx_config.set_string('-lm', lm)
@@ -67,7 +64,7 @@ def split_n_lists_uniform(data, number):
     if len(data) <= number:
         return [data]
     m = float(len(data)) / number
-    parts = [data[int(m*i):int(m*(i+1))] for i in range(number)]
+    parts = [data[int(m * i):int(m * (i + 1))] for i in range(number)]
     return parts
 
 
@@ -88,7 +85,8 @@ def decode_audio(audio_file, decoder, log, sample_rate):
         tmp_file_name = '/tmp/' + os.path.basename(audio_file) + '.wav'
         if os.path.exists(tmp_file_name):
             os.remove(tmp_file_name)
-        ff = ffmpy.FFmpeg(inputs={audio_file: None}, outputs={tmp_file_name: '-ac 1 -ar {} -loglevel quiet '.format(sample_rate)})
+        ff = ffmpy.FFmpeg(inputs={audio_file: None},
+                          outputs={tmp_file_name: '-ac 1 -ar {} -loglevel quiet '.format(sample_rate)})
         if log:
             logging.info('conversion cmd: {}'.format(ff.cmd))
             logging.info('wav file converted to {}'.format(tmp_file_name))
@@ -138,7 +136,8 @@ def print_results(myid, results, outfile_prefix, log):
             result_writer.write(transcription + fileid)
 
 
-def decode_speech(myid, audio_list, config, in_dir, out, log, sample_rate):
+def decode_speech(myid, audio_list, config, in_dir,
+                  out, log, sample_rate, progress_outfile):
     logging.info('decoder of process {} with pid {} has been started ...'.format(myid, os.getpid()))
     if log:
         logging.info('input directory: {}'.format(in_dir))
@@ -150,9 +149,13 @@ def decode_speech(myid, audio_list, config, in_dir, out, log, sample_rate):
     t1 = time.time()
     # bar = Bar('Progress of process {}, pid {}'.format(myid, os.getpid()), max=len(audio_list))
     if myid != 'seq':
-        pbar = tqdm(total=len(audio_list), desc='Progress of process {}, pid {}'.format(myid, os.getpid()), position=int(myid))
-    else: 
-        pbar = tqdm(total=len(audio_list), desc='Progress of process {}, pid {}'.format(myid, os.getpid()))
+        pbar = tqdm(total=len(audio_list),
+                    desc='Progress of process {}, pid {}'.format(myid, os.getpid()),
+                    position=int(myid), file=progress_outfile)
+    else:
+        pbar = tqdm(total=len(audio_list),
+                    desc='Progress of process {}, pid {}'.format(myid, os.getpid()),
+                    file=progress_outfile)
     for i, audio_file in enumerate(audio_list):
         if log:
             logging.info('decode {}'.format(audio_file))
@@ -165,7 +168,6 @@ def decode_speech(myid, audio_list, config, in_dir, out, log, sample_rate):
         # file_writer.flush() # instead, we used buffering=1 
     # bar.finish()
     pbar.close()
-
 
     ##########################################
     t2 = time.time()

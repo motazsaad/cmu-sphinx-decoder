@@ -20,8 +20,9 @@ import decoderUtils
 
 logging.basicConfig(format='%(levelname)s: %(asctime)s %(message)s', level=logging.INFO)
 
-parser = argparse.ArgumentParser(description='This decoder is based CMU Sphinx (works offline) engine provided by '
-                                             'speech_recognition python package.')  # type: ArgumentParser
+parser = argparse.ArgumentParser(description='This decoder is based CMU Sphinx'
+                                             ' (works offline) engine provided by'
+                                             ' speech_recognition python package.')
 parser.add_argument('-i', '--indir', type=str, help='input wave directory', required=True)
 parser.add_argument('-c', '--conf', type=str, help='configuration file', required=True)
 parser.add_argument('-l', '--log', action='store_true')
@@ -42,7 +43,8 @@ if __name__ == '__main__':
     ##############################
     indir_date = in_dir.replace('/storage/recordings/', '').replace('/', '_')
     outfile = '/home/sphinxuser/logs/' + indir_date + '.log'
-    # sys.stdout = open(outfile, mode='w', encoding='utf-8')
+    progress_outfile = '/home/sphinxuser/logs/' + indir_date + '_progress.log'
+    sys.stdout = open(outfile, mode='w', encoding='utf-8')
     print('outfile', outfile)
     print('indir date:', indir_date)
     ##############################
@@ -63,19 +65,19 @@ if __name__ == '__main__':
     ###########################################
     config = configparser.ConfigParser()
     if not os.path.exists(conf_file):
-        print('ERROR: {} doest not exisit'.format(conf_file))
+        print('ERROR: {} doest not exist'.format(conf_file))
         sys.exit(-1)
     config.read(conf_file)
     if log:
         logging.info('config file: {}'.format(conf_file))
     model_name = config.sections()[0]
     hmm = config[model_name]['hmm']
-    dict = config[model_name]['dict']
+    dic = config[model_name]['dict']
     lm = config[model_name]['lm']
     # logfn = config[model_name]['log']
     # logfn = out + '.log'
     print('hmm: {}'.format(hmm))
-    print('dict: {}'.format(dict))
+    print('dict: {}'.format(dic))
     print('lm: {}'.format(lm))
     print('audio directory: {}'.format(in_dir))
     # print('logfn: {}'.format(logfn))
@@ -95,7 +97,8 @@ if __name__ == '__main__':
     for i, audio_list in enumerate(audio_file_lists):
         print('part {} has {} audio segments'.format(i, len(audio_list)))
         proc = Process(target=decoderUtils.decode_speech,
-                       args=(i, audio_list, config, in_dir, out, log, sample_rate))
+                       args=(i, audio_list, config, in_dir,
+                             out, log, sample_rate, progress_outfile))
         processes.append(proc)
         proc.start()
     for p in processes:
