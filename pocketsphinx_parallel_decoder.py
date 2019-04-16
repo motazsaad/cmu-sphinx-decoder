@@ -43,7 +43,9 @@ if __name__ == '__main__':
     ##############################
     indir_date = in_dir.replace('/storage/recordings/', '').replace('/', '_')
     outfile = '/home/sphinxuser/logs/' + indir_date + '.log'
-    progress_outfile = '/home/sphinxuser/logs/' + indir_date + '_progress.log'
+    progress_outfile_filename = '/home/sphinxuser/logs/' + \
+                                indir_date + '_progress.log'
+    progress_outfile = open(progress_outfile_filename, mode='w')
     sys.stdout = open(outfile, mode='w', encoding='utf-8')
     print('outfile', outfile)
     print('indir date:', indir_date)
